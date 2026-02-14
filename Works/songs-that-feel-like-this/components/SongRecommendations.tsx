@@ -43,7 +43,7 @@ export default function SongRecommendations({ songs }: SongRecommendationsProps)
       y: 0,
       transition: {
         duration: 0.5,
-        ease: 'easeOut'
+        ease: [0.4, 0, 0.2, 1] as any // easeOut cubic-bezier
       }
     }
   };
