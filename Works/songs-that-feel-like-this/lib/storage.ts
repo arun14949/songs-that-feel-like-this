@@ -1,24 +1,13 @@
-import { promises as fs } from 'fs';
-import path from 'path';
 import { nanoid } from 'nanoid';
 import type { Recommendation } from './types';
 
-const DATA_DIR = path.join(process.cwd(), 'data', 'recommendations');
-
-// Ensure data directory exists
-async function ensureDataDir() {
-  try {
-    await fs.access(DATA_DIR);
-  } catch {
-    await fs.mkdir(DATA_DIR, { recursive: true });
-  }
-}
+// WARNING: In-memory storage - recommendations will be lost on server restart/redeployment
+// For production, migrate to Vercel KV, Upstash Redis, or a database
+const recommendations = new Map<string, Recommendation>();
 
 export async function saveRecommendation(
   data: Omit<Recommendation, 'id' | 'createdAt'>
 ): Promise<string> {
-  await ensureDataDir();
-
   const id = nanoid(10);
   const recommendation: Recommendation = {
     id,
@@ -26,20 +15,12 @@ export async function saveRecommendation(
     createdAt: new Date().toISOString(),
   };
 
-  const filePath = path.join(DATA_DIR, `${id}.json`);
-  await fs.writeFile(filePath, JSON.stringify(recommendation, null, 2));
-
+  recommendations.set(id, recommendation);
   return id;
 }
 
 export async function getRecommendation(
   id: string
 ): Promise<Recommendation | null> {
-  try {
-    const filePath = path.join(DATA_DIR, `${id}.json`);
-    const data = await fs.readFile(filePath, 'utf-8');
-    return JSON.parse(data) as Recommendation;
-  } catch (error) {
-    return null;
-  }
+  return recommendations.get(id) || null;
 }
