@@ -1,35 +1,46 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Montserrat:wght@400;500;600;700&family=Caveat:wght@400;500;600;700&display=swap');
 @import "tailwindcss";
 
 @theme {
-  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-serif: 'Playfair Display', serif;
+  --font-sans: 'Montserrat', sans-serif;
+  --font-handwriting: 'Caveat', cursive;
 
-  --color-primary-50: #f0f9ff;
-  --color-primary-100: #e0f2fe;
-  --color-primary-200: #bae6fd;
-  --color-primary-300: #7dd3fc;
-  --color-primary-400: #38bdf8;
-  --color-primary-500: #0ea5e9;
-  --color-primary-600: #0284c7;
-  --color-primary-700: #0369a1;
-  --color-primary-800: #075985;
-  --color-primary-900: #0c4a6e;
+  --color-cream-50: #fbfbf8;
+  --color-cream-100: #f4efe6;
+  --color-cream-200: #e8dfd0;
 
-  --color-accent-50: #faf5ff;
-  --color-accent-100: #f3e8ff;
-  --color-accent-200: #e9d5ff;
-  --color-accent-300: #d8b4fe;
-  --color-accent-400: #c084fc;
-  --color-accent-500: #a855f7;
-  --color-accent-600: #9333ea;
-  --color-accent-700: #7e22ce;
-  --color-accent-800: #6b21a8;
-  --color-accent-900: #581c87;
+  --color-brown-600: #8b4513;
+  --color-brown-700: #704010;
+
+  --color-gray-600: #6b7280;
+  --color-gray-700: #4b5563;
+  --color-gray-800: #1f2937;
+  --color-gray-400: #9ca3af;
+  --color-gray-300: #d1d5db;
+  --color-gray-200: #e5e7eb;
+  --color-gray-100: #f3f4f6;
 }
 
 body {
-  background: linear-gradient(to bottom right, var(--color-primary-50), #ffffff, var(--color-accent-50));
+  background-color: #f4efe6;
   min-height: 100vh;
+  position: relative;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 390 884' xmlns='http://www.w3.org/2000/svg' preserveAspectRatio='none'%3E%3Crect x='0' y='0' height='100%25' width='100%25' fill='url(%23grad)' opacity='1'/%3E%3Cdefs%3E%3CradialGradient id='grad' gradientUnits='userSpaceOnUse' cx='0' cy='0' r='10' gradientTransform='matrix(48.31 0 0 48.31 195 442)'%3E%3Cstop stop-color='rgba(0,0,0,0)' offset='0'/%3E%3Cstop stop-color='rgba(0,0,0,0.15)' offset='1'/%3E%3C/radialGradient%3E%3C/defs%3E%3C/svg%3E");
+  background-size: cover;
+  background-position: center;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.3;
 }
 
 .line-clamp-1 {

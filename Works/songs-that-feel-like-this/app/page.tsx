@@ -85,37 +85,39 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto">
+    <main className="relative min-h-screen flex flex-col items-center justify-between py-6 px-4 sm:px-6 lg:px-8">
+      <div className="w-full max-w-md mx-auto flex flex-col items-center z-10">
         {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-4 bg-gradient-to-r from-primary-600 to-accent-600 bg-clip-text text-transparent">
-            Songs That Feel Like This
+        <header className="text-center mb-8 space-y-3">
+          <h1 className="font-[family-name:var(--font-serif)] text-4xl md:text-5xl text-gray-800 leading-tight shadow-[0px_1px_1px_0px_rgba(0,0,0,0.05)]">
+            Songs That
+            <br />
+            <span className="italic text-brown-600">Feel Like This</span>
           </h1>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Upload an image and discover songs that match its vibe. Let AI find the perfect soundtrack for your visual mood.
+          <p className="font-[family-name:var(--font-sans)] text-xs font-semibold text-gray-600 tracking-[2.4px] uppercase">
+            Every photo has a soundtrack
           </p>
-        </div>
+        </header>
 
         {/* Main Content */}
         {loading ? (
           <LoadingState message={loadingMessage} />
         ) : (
-          <div className="space-y-8">
+          <>
             <ImageUploader onUpload={handleImageUpload} disabled={loading} />
 
-            {/* Examples */}
-            <div className="text-center">
-              <p className="text-sm text-gray-500">
-                Try uploading a sunset, cityscape, or any image that evokes a mood
+            {/* Tagline */}
+            <div className="mt-8 text-center max-w-sm opacity-80">
+              <p className="font-[family-name:var(--font-serif)] italic text-lg text-gray-700 leading-relaxed">
+                "Let the AI discover the perfect melody for your visual moments."
               </p>
             </div>
-          </div>
+          </>
         )}
 
         {/* Error Display */}
         {error && (
-          <div className="mt-8 max-w-2xl mx-auto">
+          <div className="mt-8 w-full max-w-md">
             <div className="bg-red-50 border border-red-200 rounded-lg p-6">
               <div className="flex items-start gap-3">
                 <svg
@@ -147,14 +149,14 @@ export default function Home() {
             </div>
           </div>
         )}
-
-        {/* Footer */}
-        <div className="mt-16 text-center">
-          <p className="text-sm text-gray-500">
-            Powered by OpenAI GPT-4 Vision and Spotify
-          </p>
-        </div>
       </div>
+
+      {/* Footer */}
+      <footer className="mt-auto pt-16 text-center z-10">
+        <p className="font-[family-name:var(--font-sans)] text-[10px] text-gray-400 tracking-[0.25px]">
+          POWERED BY OPENAI & SPOTIFY
+        </p>
+      </footer>
     </main>
   );
 }

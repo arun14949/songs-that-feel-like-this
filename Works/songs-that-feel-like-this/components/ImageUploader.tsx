@@ -89,63 +89,74 @@ export default function ImageUploader({ onUpload, disabled }: ImageUploaderProps
   };
 
   return (
-    <div className="w-full max-w-2xl mx-auto">
-      <div
-        className={`relative border-2 border-dashed rounded-lg transition-all ${
-          dragActive
-            ? 'border-accent-500 bg-accent-50'
-            : 'border-gray-300 hover:border-accent-400'
-        } ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
-        onDragEnter={handleDrag}
-        onDragLeave={handleDrag}
-        onDragOver={handleDrag}
-        onDrop={handleDrop}
-        onClick={handleClick}
-      >
-        <input
-          ref={fileInputRef}
-          type="file"
-          className="hidden"
-          accept="image/jpeg,image/jpg,image/png,image/webp"
-          onChange={handleChange}
-          disabled={disabled}
-        />
-
-        {preview ? (
-          <div className="p-4">
-            <img
-              src={preview}
-              alt="Preview"
-              className="max-h-96 mx-auto rounded-lg shadow-lg"
-            />
-            <p className="text-sm text-gray-500 text-center mt-4">
-              Click or drag to change image
-            </p>
-          </div>
-        ) : (
-          <div className="py-12 px-4 text-center">
-            <svg
-              className="mx-auto h-12 w-12 text-gray-400"
-              stroke="currentColor"
-              fill="none"
-              viewBox="0 0 48 48"
-              aria-hidden="true"
-            >
-              <path
-                d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
-                strokeWidth={2}
-                strokeLinecap="round"
-                strokeLinejoin="round"
+    <div className="w-full max-w-sm mx-auto">
+      {/* Polaroid frame container with rotation */}
+      <div className="relative w-full aspect-[4/5]">
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div
+            className={`w-full transform rotate-2 transition-all ${
+              dragActive ? 'scale-105' : ''
+            } ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:scale-[1.02]'}`}
+            onDragEnter={handleDrag}
+            onDragLeave={handleDrag}
+            onDragOver={handleDrag}
+            onDrop={handleDrop}
+            onClick={handleClick}
+          >
+            {/* Polaroid outer frame */}
+            <div className="bg-cream-50 border border-gray-100 shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.1),0px_20px_25px_-5px_rgba(0,0,0,0.15),0px_10px_10px_-5px_rgba(0,0,0,0.04)] p-4 pb-12">
+              <input
+                ref={fileInputRef}
+                type="file"
+                className="hidden"
+                accept="image/jpeg,image/jpg,image/png,image/webp"
+                onChange={handleChange}
+                disabled={disabled}
               />
-            </svg>
-            <p className="mt-4 text-lg font-medium text-gray-700">
-              Drop your image here, or click to browse
-            </p>
-            <p className="mt-2 text-sm text-gray-500">
-              JPG, PNG, or WebP up to 5MB
-            </p>
+
+              {/* Image area */}
+              <div className="bg-[#1a1a1a] border border-gray-200 aspect-[4/5] w-full overflow-hidden relative">
+                {preview ? (
+                  <img
+                    src={preview}
+                    alt="Preview"
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="absolute inset-0 flex flex-col items-center justify-center text-gray-300">
+                    {/* Camera icon */}
+                    <svg className="w-11 h-10 mb-3 opacity-90" viewBox="0 0 44 40" fill="currentColor">
+                      <path d="M22 0C9.85 0 0 8.95 0 20s9.85 20 22 20 22-8.95 22-20S34.15 0 22 0zm0 30c-5.52 0-10-4.48-10-10s4.48-10 10-10 10 4.48 10 10-4.48 10-10 10z" opacity="0.5"/>
+                      <circle cx="22" cy="20" r="6" />
+                    </svg>
+
+                    {/* Handwritten text */}
+                    <div className="transform -rotate-2">
+                      <p className="font-[family-name:var(--font-handwriting)] text-2xl opacity-90">
+                        Upload a memory...
+                      </p>
+                    </div>
+
+                    {/* File requirements */}
+                    <p className="font-[family-name:var(--font-sans)] text-[10px] text-gray-400 tracking-[1px] uppercase mt-4 opacity-50">
+                      JPG, PNG • Max 5MB
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              {/* Bottom caption area */}
+              <div className="mt-2 transform -rotate-1">
+                <p className="font-[family-name:var(--font-handwriting)] text-xl text-gray-700 text-center">
+                  #mood
+                </p>
+              </div>
+            </div>
           </div>
-        )}
+        </div>
+
+        {/* Top accent bar (decorative) */}
+        <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-24 h-8 bg-[rgba(255,255,255,0.4)] backdrop-blur-sm border border-[rgba(255,255,255,0.2)] shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1)]" />
       </div>
 
       {error && (
