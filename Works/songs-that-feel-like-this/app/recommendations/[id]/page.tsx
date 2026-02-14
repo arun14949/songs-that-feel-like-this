@@ -51,7 +51,7 @@ export default function RecommendationPage({
 
   if (loading) {
     return (
-      <main className="min-h-screen py-12 px-4">
+      <main className="relative min-h-screen py-12 px-4">
         <LoadingState message="Loading your recommendations..." />
       </main>
     );
@@ -59,9 +59,9 @@ export default function RecommendationPage({
 
   if (error || !recommendation) {
     return (
-      <main className="min-h-screen py-12 px-4">
+      <main className="relative min-h-screen py-12 px-4">
         <div className="max-w-2xl mx-auto text-center">
-          <div className="bg-white rounded-xl shadow-lg p-8">
+          <div className="bg-cream-50 border border-gray-200 rounded-xl shadow-lg p-8">
             <svg
               className="w-16 h-16 text-gray-400 mx-auto mb-4"
               fill="none"
@@ -75,15 +75,15 @@ export default function RecommendationPage({
                 d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
               />
             </svg>
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">
+            <h2 className="font-[family-name:var(--font-serif)] text-2xl text-gray-900 mb-2">
               {error || 'Recommendation Not Found'}
             </h2>
-            <p className="text-gray-600 mb-6">
+            <p className="font-[family-name:var(--font-sans)] text-gray-600 mb-6">
               This recommendation may have been deleted or the link might be invalid.
             </p>
             <Link
               href="/"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-accent-600 hover:bg-accent-700 text-white font-medium rounded-lg transition-colors"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-brown-600 hover:bg-brown-700 text-white font-[family-name:var(--font-sans)] font-medium rounded-lg transition-colors"
             >
               Create New Recommendation
             </Link>
@@ -94,34 +94,22 @@ export default function RecommendationPage({
   }
 
   return (
-    <main className="min-h-screen py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto">
+    <main className="relative min-h-screen py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-3xl mx-auto z-10">
         {/* Header */}
-        <div className="text-center mb-12">
+        <div className="text-center mb-8">
           <Link
             href="/"
-            className="inline-block mb-6 text-accent-600 hover:text-accent-700 font-medium transition-colors"
+            className="inline-block mb-6 text-brown-600 hover:text-brown-700 font-[family-name:var(--font-sans)] font-medium transition-colors"
           >
             ← Create New
           </Link>
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+          <h1 className="font-[family-name:var(--font-serif)] text-4xl md:text-5xl text-gray-800 mb-6">
             Your Soundtrack
           </h1>
 
-          {/* Mood Description */}
-          <div className="max-w-3xl mx-auto mb-8">
-            <div className="bg-white rounded-xl shadow-lg p-6 md:p-8">
-              <h2 className="text-sm font-semibold text-accent-600 uppercase tracking-wide mb-2">
-                The Vibe
-              </h2>
-              <p className="text-lg text-gray-700 leading-relaxed">
-                {recommendation.mood}
-              </p>
-            </div>
-          </div>
-
           {/* Share Button */}
-          <div className="mb-12">
+          <div className="mb-8">
             <ShareButton />
           </div>
         </div>
@@ -133,7 +121,7 @@ export default function RecommendationPage({
         <div className="mt-16 text-center">
           <Link
             href="/"
-            className="inline-flex items-center gap-2 px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-lg transition-colors"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-cream-50 border border-gray-200 hover:bg-cream-200 text-gray-700 font-[family-name:var(--font-sans)] font-medium rounded-lg transition-colors shadow-sm"
           >
             <svg
               className="w-5 h-5"
