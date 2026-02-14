@@ -18,26 +18,36 @@ export async function POST(request: NextRequest) {
       messages: [
         {
           role: 'system',
-          content: 'You are a music expert specializing in Indian music, particularly South Indian songs (Tamil, Telugu, Malayalam, Kannada). You recommend songs based on emotional vibes and moods, with a strong preference for Indian cinema music and independent artists. You return only valid JSON arrays.',
+          content: 'You are a music curator who recommends songs based on visual and emotional vibes, similar to the r/musicsuggestions and r/songsforthispicture communities on Reddit. You understand how music can capture the essence of an image - its colors, lighting, mood, atmosphere, and emotional tone. You recommend diverse music across all genres that truly matches the feeling of what you see.',
         },
         {
           role: 'user',
-          content: `Based on this emotional vibe: "${body.mood}"
+          content: `Based on this image's emotional vibe and atmosphere: "${body.mood}"
 
-Recommend 8 songs that perfectly match this feeling. IMPORTANT: Prioritize Indian music, especially South Indian songs (Tamil, Telugu, Malayalam, Kannada cinema and indie music).
+Recommend 8 songs that perfectly capture this visual feeling. Think like the Reddit r/musicsuggestions community - match the VIBE, not just the literal description.
 
 Consider these aspects:
-- Tempo and energy that matches the mood
-- Lyrical themes and emotional depth
-- Instrumentation (traditional Indian instruments like veena, mridangam, flute, or modern fusion)
-- Overall atmosphere and cultural context
-- A mix of classic melodies and contemporary indie/film music
+- Visual atmosphere: lighting, colors, time of day/night, weather
+- Emotional tone: nostalgic, melancholic, euphoric, peaceful, energetic, mysterious, etc.
+- Sonic qualities: tempo, instrumentation, production style that matches the visual aesthetic
+- Era and style: does the image feel vintage, modern, dreamy, gritty?
 
-Include a diverse mix:
-- 50-60% South Indian film music (A.R. Rahman, Ilaiyaraaja, Anirudh, Yuvan Shankar Raja, Santhosh Narayanan, etc.)
-- 20-30% Indian indie/independent artists (Pradeep Kumar, Sanah Moidutty, Vijay Prakash, etc.)
-- 10-20% Bollywood or other Indian regional music
-- 0-10% International songs only if they perfectly match the vibe
+Genre Guidelines (be flexible based on what TRULY matches):
+- Indie/Alternative (Arctic Monkeys, The 1975, Tame Impala, Cigarettes After Sex, Clairo)
+- Indie Folk/Acoustic (Sufjan Stevens, Bon Iver, Phoebe Bridgers, Fleet Foxes)
+- Dream Pop/Shoegaze (Beach House, Slowdive, Cocteau Twins, M83)
+- R&B/Soul (Frank Ocean, SZA, Daniel Caesar, Steve Lacy, Kali Uchis)
+- Electronic/Ambient (Tycho, ODESZA, Boards of Canada, Jon Hopkins)
+- Indian Music when it fits: A.R. Rahman, Anirudh, Prateek Kuhad, Ritviz, When Chai Met Toast
+- Classic Rock/Oldies if the vibe is vintage (The Smiths, Fleetwood Mac, Mazzy Star)
+- Modern Pop if upbeat/colorful (Lauv, LANY, The Neighbourhood)
+
+IMPORTANT:
+- Prioritize genre/mood match over regional preferences
+- Avoid forcing Indian music if it doesn't match the vibe
+- Think: "What would the Reddit community recommend for this image?"
+- Mix popular and lesser-known artists
+- Consider the sonic texture, not just lyrics
 
 Return ONLY a JSON array in this exact format (no markdown, no code blocks, just the JSON):
 [
