@@ -103,13 +103,13 @@ export default function Home() {
         </header>
 
         {/* Main Content */}
-        {loading ? (
+        {uploadedImage ? (
           <div className="w-full flex flex-col items-center space-y-8">
-            {/* Show polaroid with uploaded image during loading */}
-            {uploadedImage && (
-              <PolaroidFrame imageUrl={uploadedImage} className="w-64" />
-            )}
-            <LoadingState message={loadingMessage} />
+            {/* Show polaroid with uploaded image - stays visible during loading and errors */}
+            <PolaroidFrame imageUrl={uploadedImage} className="w-64" />
+
+            {/* Show loading state or allow retry on error */}
+            {loading && <LoadingState message={loadingMessage} />}
           </div>
         ) : (
           <>
@@ -124,7 +124,7 @@ export default function Home() {
           </>
         )}
 
-        {/* Error Display */}
+        {/* Error Display - shown below polaroid or in main area */}
         {error && (
           <div className="mt-8 w-full max-w-md">
             <div className="bg-red-50 border border-red-200 rounded-lg p-6">
@@ -148,10 +148,13 @@ export default function Home() {
                   </h3>
                   <p className="mt-1 text-sm text-red-700">{error}</p>
                   <button
-                    onClick={() => setError(null)}
+                    onClick={() => {
+                      setError(null);
+                      setUploadedImage(null); // Reset to allow new upload
+                    }}
                     className="mt-3 text-sm font-medium text-red-600 hover:text-red-500"
                   >
-                    Try again
+                    Try again with a new image
                   </button>
                 </div>
               </div>
