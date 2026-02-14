@@ -118,27 +118,28 @@ export default function RecommendationPage({
         {/* Song Recommendations */}
         <SongRecommendations songs={recommendation.songs} />
 
-        {/* Footer */}
-        <div className="mt-16 text-center">
-          <Link
-            href="/"
-            className="inline-flex items-center gap-2 px-6 py-3 bg-cream-50 border border-gray-200 hover:bg-cream-200 text-gray-700 font-[family-name:var(--font-sans)] font-medium rounded-lg transition-colors shadow-sm"
-          >
-            <svg
-              className="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
+          {/* Footer */}
+          <div className="mt-16 text-center">
+            <Link
+              href="/"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-cream-50 border border-gray-200 hover:bg-cream-200 text-gray-700 font-[family-name:var(--font-sans)] font-medium rounded-lg transition-colors shadow-sm"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 4v16m8-8H4"
-              />
-            </svg>
-            Create Another
-          </Link>
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 4v16m8-8H4"
+                />
+              </svg>
+              Create Another
+            </Link>
+          </div>
         </div>
       </main>
     </>
