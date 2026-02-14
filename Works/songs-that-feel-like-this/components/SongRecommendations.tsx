@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { motion } from 'framer-motion';
 import SpotifyPlayer from './SpotifyPlayer';
 import type { SpotifyTrack } from '@/lib/types';
 
@@ -23,11 +24,41 @@ export default function SongRecommendations({ songs }: SongRecommendationsProps)
     setCurrentPlayingIndex(index);
   };
 
+  // Animation variants
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1, // Delay between each song animation
+        delayChildren: 0.2    // Initial delay before starting
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.5,
+        ease: 'easeOut'
+      }
+    }
+  };
+
   return (
-    <div className="space-y-4">
+    <motion.div
+      className="space-y-4"
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+    >
       {songs.map((song, index) => (
-        <div
+        <motion.div
           key={song.id}
+          variants={itemVariants}
           className="bg-cream-50 border border-gray-200 rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow duration-300"
         >
           {/* Song Info and Player */}
@@ -51,8 +82,8 @@ export default function SongRecommendations({ songs }: SongRecommendationsProps)
               onPlay={() => handlePlay(index)}
             />
           </div>
-        </div>
+        </motion.div>
       ))}
-    </div>
+    </motion.div>
   );
 }

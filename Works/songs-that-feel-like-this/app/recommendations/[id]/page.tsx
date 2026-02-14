@@ -7,6 +7,7 @@ import SongRecommendations from '@/components/SongRecommendations';
 import ShareButton from '@/components/ShareButton';
 import LoadingState from '@/components/LoadingState';
 import PolaroidFrame from '@/components/PolaroidFrame';
+import AppBar from '@/components/AppBar';
 import type { Recommendation } from '@/lib/types';
 
 export default function RecommendationPage({
@@ -95,17 +96,13 @@ export default function RecommendationPage({
   }
 
   return (
-    <main className="relative min-h-screen py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-3xl mx-auto z-10">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <Link
-            href="/"
-            className="inline-block mb-6 text-brown-600 hover:text-brown-700 font-[family-name:var(--font-sans)] font-medium transition-colors"
-          >
-            ← Create New
-          </Link>
+    <>
+      {/* App Bar */}
+      <AppBar title="Your Soundtrack" />
 
+      {/* Main Content with top padding */}
+      <main className="relative min-h-screen pt-24 pb-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-3xl mx-auto z-10">
           {/* Polaroid Frame with Uploaded Image */}
           {recommendation.imageUrl && (
             <div className="mb-8 flex justify-center">
@@ -113,15 +110,10 @@ export default function RecommendationPage({
             </div>
           )}
 
-          <h1 className="font-[family-name:var(--font-serif)] text-4xl md:text-5xl text-gray-800 mb-6">
-            Your Soundtrack
-          </h1>
-
           {/* Share Button */}
-          <div className="mb-8">
+          <div className="mb-8 text-center">
             <ShareButton />
           </div>
-        </div>
 
         {/* Song Recommendations */}
         <SongRecommendations songs={recommendation.songs} />
@@ -148,7 +140,7 @@ export default function RecommendationPage({
             Create Another
           </Link>
         </div>
-      </div>
-    </main>
+      </main>
+    </>
   );
 }
