@@ -104,12 +104,14 @@ export default function Home() {
 
         {/* Main Content */}
         {uploadedImage ? (
-          <div className="w-full flex flex-col items-center space-y-8">
-            {/* Show polaroid with uploaded image - stays visible during loading and errors */}
-            <PolaroidFrame imageUrl={uploadedImage} className="w-64" />
-
-            {/* Show loading state or allow retry on error */}
-            {loading && <LoadingState message={loadingMessage} />}
+          <div className="w-full flex flex-col items-center">
+            {/* Show polaroid with uploaded image - loading message shown in caption */}
+            <PolaroidFrame
+              imageUrl={uploadedImage}
+              className="w-64"
+              loading={loading}
+              loadingMessage={loadingMessage}
+            />
           </div>
         ) : (
           <>
