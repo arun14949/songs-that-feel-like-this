@@ -18,17 +18,26 @@ export async function POST(request: NextRequest) {
       messages: [
         {
           role: 'system',
-          content: 'You are a music expert who recommends songs based on emotional vibes and moods. You return only valid JSON arrays.',
+          content: 'You are a music expert specializing in Indian music, particularly South Indian songs (Tamil, Telugu, Malayalam, Kannada). You recommend songs based on emotional vibes and moods, with a strong preference for Indian cinema music and independent artists. You return only valid JSON arrays.',
         },
         {
           role: 'user',
           content: `Based on this emotional vibe: "${body.mood}"
 
-Recommend 8 songs that perfectly match this feeling. Consider:
+Recommend 8 songs that perfectly match this feeling. IMPORTANT: Prioritize Indian music, especially South Indian songs (Tamil, Telugu, Malayalam, Kannada cinema and indie music).
+
+Consider these aspects:
 - Tempo and energy that matches the mood
-- Lyrical themes (if applicable)
-- Instrumentation and production style
-- Overall atmosphere
+- Lyrical themes and emotional depth
+- Instrumentation (traditional Indian instruments like veena, mridangam, flute, or modern fusion)
+- Overall atmosphere and cultural context
+- A mix of classic melodies and contemporary indie/film music
+
+Include a diverse mix:
+- 50-60% South Indian film music (A.R. Rahman, Ilaiyaraaja, Anirudh, Yuvan Shankar Raja, Santhosh Narayanan, etc.)
+- 20-30% Indian indie/independent artists (Pradeep Kumar, Sanah Moidutty, Vijay Prakash, etc.)
+- 10-20% Bollywood or other Indian regional music
+- 0-10% International songs only if they perfectly match the vibe
 
 Return ONLY a JSON array in this exact format (no markdown, no code blocks, just the JSON):
 [
