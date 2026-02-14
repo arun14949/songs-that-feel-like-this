@@ -6,6 +6,7 @@ import Link from 'next/link';
 import SongRecommendations from '@/components/SongRecommendations';
 import ShareButton from '@/components/ShareButton';
 import LoadingState from '@/components/LoadingState';
+import PolaroidFrame from '@/components/PolaroidFrame';
 import type { Recommendation } from '@/lib/types';
 
 export default function RecommendationPage({
@@ -104,6 +105,14 @@ export default function RecommendationPage({
           >
             ← Create New
           </Link>
+
+          {/* Polaroid Frame with Uploaded Image */}
+          {recommendation.imageUrl && (
+            <div className="mb-8 flex justify-center">
+              <PolaroidFrame imageUrl={recommendation.imageUrl} className="w-64" />
+            </div>
+          )}
+
           <h1 className="font-[family-name:var(--font-serif)] text-4xl md:text-5xl text-gray-800 mb-6">
             Your Soundtrack
           </h1>

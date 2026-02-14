@@ -15,6 +15,7 @@ export async function POST(request: NextRequest) {
     const id = await saveRecommendation({
       mood: body.mood,
       songs: body.songs,
+      imageUrl: body.imageUrl,  // Include the uploaded image
     });
 
     return NextResponse.json({ id });

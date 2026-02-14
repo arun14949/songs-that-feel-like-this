@@ -22,5 +22,6 @@ export interface Recommendation {
   id: string;
   mood: string;
   songs: SpotifyTrack[];
+  imageUrl?: string;  // Base64 encoded uploaded image
   createdAt: string;
 }

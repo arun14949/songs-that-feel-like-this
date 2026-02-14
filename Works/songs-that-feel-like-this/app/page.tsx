@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import ImageUploader from '@/components/ImageUploader';
 import LoadingState from '@/components/LoadingState';
+import PolaroidFrame from '@/components/PolaroidFrame';
 import type { SpotifyTrack } from '@/lib/types';
 
 export default function Home() {
@@ -11,10 +12,12 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const [uploadedImage, setUploadedImage] = useState<string | null>(null);
 
   const handleImageUpload = async (base64Image: string) => {
     setLoading(true);
     setError(null);
+    setUploadedImage(base64Image);  // Store the uploaded image
 
     try {
       // Step 1: Analyze image
@@ -67,7 +70,7 @@ export default function Home() {
       const saveResponse = await fetch('/api/save', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ mood, songs: tracks }),
+        body: JSON.stringify({ mood, songs: tracks, imageUrl: base64Image }),
       });
 
       if (!saveResponse.ok) {
@@ -101,7 +104,13 @@ export default function Home() {
 
         {/* Main Content */}
         {loading ? (
-          <LoadingState message={loadingMessage} />
+          <div className="w-full flex flex-col items-center space-y-8">
+            {/* Show polaroid with uploaded image during loading */}
+            {uploadedImage && (
+              <PolaroidFrame imageUrl={uploadedImage} className="w-64" />
+            )}
+            <LoadingState message={loadingMessage} />
+          </div>
         ) : (
           <>
             <ImageUploader onUpload={handleImageUpload} disabled={loading} />
