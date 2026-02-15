@@ -106,7 +106,11 @@ export default function RecommendationPage({
           {/* Polaroid Frame with Uploaded Image */}
           {recommendation.imageUrl && (
             <div className="mb-8 flex flex-col items-center">
-              <PolaroidFrame imageUrl={recommendation.imageUrl} className="w-[280px]" />
+              <PolaroidFrame
+                imageUrl={recommendation.imageUrl}
+                className="w-[280px]"
+                imageAspect="280/201"
+              />
             </div>
           )}
 
@@ -116,10 +120,10 @@ export default function RecommendationPage({
           </div>
 
           {/* Section Heading with Decorative Lines */}
-          <div className="mb-6 flex items-center gap-2 px-1">
+          <div className="mb-6 flex items-center gap-3 px-1">
             <div className="h-px bg-[#8b4513] flex-1" />
-            <h2 className="font-[family-name:var(--font-serif)] text-lg text-[#212121] tracking-wide text-center leading-tight whitespace-pre-wrap">
-              Your Song{'\n'}Recommendations
+            <h2 className="font-[family-name:var(--font-serif)] font-bold text-base text-[#212121] tracking-wide text-center leading-snug whitespace-nowrap">
+              Your Song<br />Recommendations
             </h2>
             <div className="h-px bg-[#8b4513] flex-1" />
           </div>

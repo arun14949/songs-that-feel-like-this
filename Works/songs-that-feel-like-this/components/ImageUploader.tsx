@@ -89,10 +89,10 @@ export default function ImageUploader({ onUpload, disabled }: ImageUploaderProps
   };
 
   return (
-    <div className="w-full max-w-sm mx-auto">
+    <div className="w-[280px] mx-auto">
       {/* Polaroid frame container with rotation */}
-      <div className="relative w-full aspect-[4/5]">
-        <div className="absolute inset-0 flex items-center justify-center">
+      <div className="relative w-full">
+        <div className="flex items-center justify-center">
           <div
             className={`w-full transform rotate-2 transition-all ${
               dragActive ? 'scale-105' : ''
@@ -104,7 +104,7 @@ export default function ImageUploader({ onUpload, disabled }: ImageUploaderProps
             onClick={handleClick}
           >
             {/* Polaroid outer frame */}
-            <div className="bg-cream-50 border border-gray-100 shadow-[0px_10px_16px_0px_rgba(91,84,70,0.2)] p-4 pb-6 relative">
+            <div className="bg-[#fbfbfb] border border-gray-100 shadow-[0px_10px_16px_0px_rgba(91,84,70,0.2)] p-4 pb-6 relative">
               <input
                 ref={fileInputRef}
                 type="file"
@@ -114,8 +114,8 @@ export default function ImageUploader({ onUpload, disabled }: ImageUploaderProps
                 disabled={disabled}
               />
 
-              {/* Image area with paper texture */}
-              <div className="bg-[#212121] aspect-[4/5] w-full overflow-hidden relative">
+              {/* Image area with paper texture - 280x370px */}
+              <div className="bg-[#212121] w-full overflow-hidden relative" style={{ aspectRatio: '280/370' }}>
                 {preview ? (
                   <>
                     <img

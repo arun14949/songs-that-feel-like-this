@@ -92,12 +92,12 @@ export default function Home() {
       <div className="w-full max-w-md mx-auto flex flex-col items-center z-10">
         {/* Header */}
         <header className="text-center mb-8 space-y-3">
-          <h1 className="font-[family-name:var(--font-serif)] text-4xl md:text-5xl text-gray-800 leading-tight shadow-[0px_1px_1px_0px_rgba(0,0,0,0.05)]">
+          <h1 className="font-[family-name:var(--font-serif)] font-bold text-[40px] md:text-5xl text-[#212121] leading-tight shadow-[0px_1px_1px_0px_rgba(0,0,0,0.05)]">
             Songs That
             <br />
-            <span className="italic text-brown-600">Feel Like This</span>
+            <span className="italic text-[#8b4513]">Feel Like This</span>
           </h1>
-          <p className="font-[family-name:var(--font-sans)] text-xs font-semibold text-gray-600 tracking-[2.4px] uppercase">
+          <p className="font-[family-name:var(--font-sans)] text-xs font-normal text-[#757575] tracking-[2.4px] uppercase">
             Every photo has a soundtrack
           </p>
         </header>
@@ -108,9 +108,10 @@ export default function Home() {
             {/* Show polaroid with uploaded image - loading message shown in caption */}
             <PolaroidFrame
               imageUrl={uploadedImage}
-              className="w-64"
+              className="w-[280px]"
               loading={loading}
               loadingMessage={loadingMessage}
+              imageAspect="280/370"
             />
           </div>
         ) : (
@@ -118,8 +119,8 @@ export default function Home() {
             <ImageUploader onUpload={handleImageUpload} disabled={loading} />
 
             {/* Tagline */}
-            <div className="mt-8 text-center max-w-sm opacity-80">
-              <p className="font-[family-name:var(--font-serif)] italic text-lg text-gray-700 leading-relaxed">
+            <div className="mt-8 text-center max-w-sm">
+              <p className="font-[family-name:var(--font-serif)] italic text-lg text-[#212121] leading-relaxed opacity-90">
                 "Let the AI discover the perfect melody for your visual moments."
               </p>
             </div>

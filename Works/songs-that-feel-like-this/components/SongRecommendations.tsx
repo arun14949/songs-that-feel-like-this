@@ -51,33 +51,18 @@ export default function SongRecommendations({ songs }: SongRecommendationsProps)
         <motion.div
           key={song.id}
           variants={itemVariants}
-          className="bg-cream-50 rounded-2xl overflow-hidden"
+          className="bg-[#212121] rounded-2xl overflow-hidden"
         >
-          {/* Song Info and Player */}
-          <div className="p-4">
-            {/* Song Title and Artist */}
-            <div className="mb-4">
-              <h3 className="font-[family-name:var(--font-serif)] text-base text-[#212121] leading-tight">
-                {song.name}
-              </h3>
-              <p className="font-[family-name:var(--font-sans)] text-[#757575] text-sm leading-tight mt-1">
-                {song.artist}
-              </p>
-            </div>
-
-            {/* Embedded Spotify Player */}
-            <div className="bg-[#212121] rounded-2xl overflow-hidden">
-              <iframe
-                src={`https://open.spotify.com/embed/track/${song.id}?utm_source=generator&theme=0`}
-                width="100%"
-                height="152"
-                frameBorder="0"
-                allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-                loading="lazy"
-                className="w-full"
-              />
-            </div>
-          </div>
+          {/* Embedded Spotify Player - No external title/artist display */}
+          <iframe
+            src={`https://open.spotify.com/embed/track/${song.id}?utm_source=generator&theme=0`}
+            width="100%"
+            height="152"
+            frameBorder="0"
+            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+            loading="lazy"
+            className="w-full"
+          />
         </motion.div>
       ))}
     </motion.div>
