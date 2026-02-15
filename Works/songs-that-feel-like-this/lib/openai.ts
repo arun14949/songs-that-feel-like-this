@@ -9,6 +9,8 @@ function getOpenAIClient() {
     }
     _openai = new OpenAI({
       apiKey: process.env.OPENAI_API_KEY,
+      timeout: 30000, // 30 second timeout for vision API calls
+      maxRetries: 2, // Retry twice on transient failures
     });
   }
   return _openai;

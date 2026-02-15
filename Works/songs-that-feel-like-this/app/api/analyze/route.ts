@@ -163,7 +163,7 @@ Return a JSON object with:
 }
 
 **Requirements**:
-- Return 5-10 songs total (aim for 8 songs for best experience)
+- Return EXACTLY 5-6 songs total (for optimal performance and Spotify API limits)
 - Minimum 75% Indian (85% if clearly Indian setting)
 - MAXIMUM 2 A.R. Rahman songs (strictly enforced)
 - Each song MUST have all 5 fields filled
@@ -236,12 +236,12 @@ RESPOND ONLY WITH VALID JSON. NO MARKDOWN, NO ADDITIONAL TEXT.`,
       result.songs = [...nonPratikSongs, ...pratikSongs.slice(0, 1)];
     }
 
-    // Ensure song count is between 5-10
+    // Ensure song count is between 5-6
     if (result.songs.length < 5) {
       console.warn(`Only ${result.songs.length} songs returned, minimum is 5`);
-    } else if (result.songs.length > 10) {
-      console.warn(`${result.songs.length} songs returned, limiting to 10`);
-      result.songs = result.songs.slice(0, 10);
+    } else if (result.songs.length > 6) {
+      console.warn(`${result.songs.length} songs returned, limiting to 6`);
+      result.songs = result.songs.slice(0, 6);
     }
 
     return NextResponse.json({

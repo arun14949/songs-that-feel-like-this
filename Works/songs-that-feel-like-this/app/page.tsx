@@ -20,8 +20,8 @@ export default function Home() {
     setUploadedImage(base64Image);  // Store the uploaded image
 
     try {
-      // Step 1: Analyze image
-      setLoadingMessage('Analyzing your image...');
+      // Step 1: Analyze image (more descriptive messages)
+      setLoadingMessage('Understanding your image...');
       const analyzeResponse = await fetch('/api/analyze', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -33,9 +33,10 @@ export default function Home() {
       }
 
       const { mood, songs } = await analyzeResponse.json();
+      console.log(`AI recommended ${songs.length} songs`);
 
-      // Step 2: Enrich with Spotify data
-      setLoadingMessage('Getting Spotify data...');
+      // Step 2: Enrich with Spotify data (show progress)
+      setLoadingMessage('Finding songs on Spotify...');
       const spotifyResponse = await fetch('/api/spotify', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -43,15 +44,22 @@ export default function Home() {
       });
 
       if (!spotifyResponse.ok) {
-        throw new Error('Failed to fetch Spotify data');
+        const errorData = await spotifyResponse.json();
+
+        // If rate limited, show retry-after time
+        if (spotifyResponse.status === 429 && errorData.retryAfter) {
+          throw new Error(`Spotify rate limit reached. Please wait ${errorData.retryAfter} seconds and try again.`);
+        }
+
+        throw new Error(errorData.error || 'Failed to fetch Spotify data');
       }
 
       const { tracks }: { tracks: SpotifyTrack[] } = await spotifyResponse.json();
 
       console.log(`Found ${tracks.length} songs on Spotify out of ${songs.length} recommended`);
 
-      // Require at least 4 songs to show results (instead of requiring all songs)
-      if (tracks.length < 4) {
+      // Require at least 3 songs to show results (lowered threshold for 5-6 song recommendations)
+      if (tracks.length < 3) {
         throw new Error('Could not find these songs on Spotify. Please try a different image or try again.');
       }
 
