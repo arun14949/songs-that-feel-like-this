@@ -60,7 +60,7 @@ export default function PolaroidFrame({
                 animationData={animationData}
                 loop={true}
                 autoplay={true}
-                className="w-full h-full"
+                style={{ width: '100%', height: '100%' }}
               />
             </div>
           )}
