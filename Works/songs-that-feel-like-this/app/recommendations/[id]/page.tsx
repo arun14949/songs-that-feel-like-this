@@ -54,7 +54,7 @@ export default function RecommendationPage({
   return (
     <>
       {/* App Bar */}
-      <AppBar title="Your Song Recommendations" />
+      <AppBar title="Create New Recommendation" />
 
       {/* Main Content with top padding */}
       <main className="relative min-h-screen pt-20 pb-12 px-6">
