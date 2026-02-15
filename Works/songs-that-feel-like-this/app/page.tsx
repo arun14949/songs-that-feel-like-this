@@ -138,28 +138,41 @@ export default function Home() {
                                       error?.toLowerCase().includes('needs a break'));
 
           return (
-            <div className="mt-8 w-full max-w-[328px]">
-              <div className="bg-white border border-gray-200 rounded-3xl p-6">
-                <div className="flex items-start gap-2">
+            <div
+              ref={(el) => {
+                if (el) {
+                  // Scroll to error card when it appears (below fold on mobile)
+                  setTimeout(() => {
+                    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                  }, 100);
+                }
+              }}
+              className="mt-8 w-full max-w-[328px]"
+            >
+              <div className="bg-[#fff3f3] border border-[#ffc7c9] rounded-[8px] pl-[8px] pr-[16px] py-[24px]">
+                <div className="flex items-start gap-[8px]">
                   {/* 90x90 Error Icon */}
                   <img
                     src={isSpotifyRateLimit ? "/error-spotify.png" : "/error-generic.png"}
                     alt="Error icon"
-                    className="w-[90px] h-[90px] rounded-lg flex-shrink-0"
+                    className="w-[90px] h-[90px] shrink-0"
                   />
 
-                  <div className="flex-1 flex flex-col gap-2">
-                    {/* Title */}
-                    <h3 className="font-[family-name:var(--font-serif)] font-bold text-[20px] text-[#8b0000] leading-tight">
-                      {isSpotifyRateLimit ? "Spotify Needs a Break!" : "Well This is Awkward!"}
-                    </h3>
+                  <div className="flex-1 flex flex-col">
+                    {/* Title and Message Container */}
+                    <div className="flex flex-col gap-[4px]">
+                      {/* Title */}
+                      <h3 className="font-[family-name:var(--font-serif)] font-bold text-[16px] text-[#ad0000] leading-[1.5] tracking-[0.25px]">
+                        {isSpotifyRateLimit ? "Spotify Needs a Break!" : "Well This is Awkward!"}
+                      </h3>
 
-                    {/* Message */}
-                    <p className="font-[family-name:var(--font-sans)] text-[14px] text-[#5c5c5c] leading-[1.4]">
-                      {isSpotifyRateLimit
-                        ? error.replace('Spotify rate limit reached. Please try again in', 'Too many requests right now. Please try again in')
-                        : "Something broke. We're pretending it's fine."}
-                    </p>
+                      {/* Message */}
+                      <p className="font-[family-name:var(--font-sans)] font-normal text-[14px] text-[#212121] leading-[1.4]">
+                        {isSpotifyRateLimit
+                          ? error.replace('Spotify rate limit reached. Please try again in', 'Too many requests right now. Please try again in')
+                          : "Something broke. We're pretending it's fine."}
+                      </p>
+                    </div>
 
                     {/* CTA Button (only for generic errors) */}
                     {!isSpotifyRateLimit && (
@@ -168,7 +181,7 @@ export default function Home() {
                           setError(null);
                           setUploadedImage(null);
                         }}
-                        className="mt-2 font-[family-name:var(--font-sans)] font-bold text-[14px] text-[#8b0000] hover:text-[#6d0000] text-left"
+                        className="mt-[16px] font-[family-name:var(--font-sans)] font-bold text-[14px] text-[#212121] hover:text-[#ad0000] text-left leading-[1.5]"
                       >
                         Try Again
                       </button>
