@@ -5,7 +5,16 @@ import type { Recommendation } from './types';
 // Use Vercel KV for persistent storage
 // Fallback to in-memory if KV is not configured (for local development)
 const recommendations = new Map<string, Recommendation>();
-const useKV = !!process.env.KV_REST_API_URL;
+
+// Check for either KV_REST_API_URL or REDIS_URL (different Vercel KV setups)
+const useKV = !!(process.env.KV_REST_API_URL || process.env.KV_URL || process.env.REDIS_URL);
+
+// Log KV configuration status on module load
+if (useKV) {
+  console.log('✅ Vercel KV detected - using persistent storage');
+} else {
+  console.warn('⚠️  No KV storage detected - using in-memory (recommendations will be lost on restart)');
+}
 
 export async function saveRecommendation(
   data: Omit<Recommendation, 'id' | 'createdAt'>
