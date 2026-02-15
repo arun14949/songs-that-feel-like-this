@@ -98,7 +98,7 @@ export default function RecommendationPage({
                     <h2 className="font-[family-name:var(--font-serif)] font-bold text-2xl text-[#212121] leading-tight whitespace-pre-wrap">
                       {'Oops!!\nRecommendation not found.'}
                     </h2>
-                    <p className="font-[family-name:var(--font-sans)] text-base text-[#757575] leading-[1.4]">
+                    <p className="font-[family-name:var(--font-sans)] text-base text-[#5c5c5c] leading-[1.4]">
                       This recommendation may have been deleted or the link might be invalid.
                     </p>
                   </div>

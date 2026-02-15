@@ -149,7 +149,7 @@ export default function ImageUploader({ onUpload, disabled }: ImageUploaderProps
                       </div>
 
                       {/* File requirements */}
-                      <p className="font-[family-name:var(--font-sans)] text-[14px] text-[#757575] tracking-wide mt-1">
+                      <p className="font-[family-name:var(--font-sans)] text-[14px] text-[#5c5c5c] tracking-wide mt-1">
                         JPG, PNG • Max 5MB
                       </p>
                     </div>

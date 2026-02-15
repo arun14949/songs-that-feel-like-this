@@ -109,7 +109,7 @@ export default function Home() {
             <br />
             <span className="italic text-[#8b4513]">Feel Like This</span>
           </h1>
-          <p className="font-[family-name:var(--font-sans)] text-sm font-normal text-[#757575] tracking-[0.025px]">
+          <p className="font-[family-name:var(--font-sans)] text-sm font-normal text-[#5c5c5c] tracking-[0.025px]">
             Every photo has a soundtrack
           </p>
         </header>
@@ -131,42 +131,54 @@ export default function Home() {
         )}
 
         {/* Error Display - shown below polaroid or in main area */}
-        {error && (
-          <div className="mt-8 w-full max-w-md">
-            <div className="bg-red-50 border border-red-200 rounded-lg p-6">
-              <div className="flex items-start gap-3">
-                <svg
-                  className="w-6 h-6 text-red-600 flex-shrink-0 mt-0.5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+        {error && (() => {
+          // Detect if it's a Spotify rate limit error
+          const isSpotifyRateLimit = error?.toLowerCase().includes('spotify') &&
+                                     (error?.toLowerCase().includes('rate limit') ||
+                                      error?.toLowerCase().includes('needs a break'));
+
+          return (
+            <div className="mt-8 w-full max-w-[328px]">
+              <div className="bg-white border border-gray-200 rounded-3xl p-6">
+                <div className="flex items-start gap-2">
+                  {/* 90x90 Error Icon */}
+                  <img
+                    src={isSpotifyRateLimit ? "/error-spotify.png" : "/error-generic.png"}
+                    alt="Error icon"
+                    className="w-[90px] h-[90px] rounded-lg flex-shrink-0"
                   />
-                </svg>
-                <div className="flex-1">
-                  <h3 className="text-sm font-medium text-red-800">
-                    Something went wrong
-                  </h3>
-                  <p className="mt-1 text-sm text-red-700">{error}</p>
-                  <button
-                    onClick={() => {
-                      setError(null);
-                      setUploadedImage(null); // Reset to allow new upload
-                    }}
-                    className="mt-3 text-sm font-medium text-red-600 hover:text-red-500"
-                  >
-                    Try again with a new image
-                  </button>
+
+                  <div className="flex-1 flex flex-col gap-2">
+                    {/* Title */}
+                    <h3 className="font-[family-name:var(--font-serif)] font-bold text-[20px] text-[#8b0000] leading-tight">
+                      {isSpotifyRateLimit ? "Spotify Needs a Break!" : "Well This is Awkward!"}
+                    </h3>
+
+                    {/* Message */}
+                    <p className="font-[family-name:var(--font-sans)] text-[14px] text-[#5c5c5c] leading-[1.4]">
+                      {isSpotifyRateLimit
+                        ? error.replace('Spotify rate limit reached. Please try again in', 'Too many requests right now. Please try again in')
+                        : "Something broke. We're pretending it's fine."}
+                    </p>
+
+                    {/* CTA Button (only for generic errors) */}
+                    {!isSpotifyRateLimit && (
+                      <button
+                        onClick={() => {
+                          setError(null);
+                          setUploadedImage(null);
+                        }}
+                        className="mt-2 font-[family-name:var(--font-sans)] font-bold text-[14px] text-[#8b0000] hover:text-[#6d0000] text-left"
+                      >
+                        Try Again
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        )}
+          );
+        })()}
       </div>
 
       {/* Footer */}
