@@ -71,56 +71,24 @@ export default function ShareButton({ imageUrl }: ShareButtonProps = {}) {
     const shareText = 'Check out these song recommendations based on my image!';
     const fullMessage = `${shareText}\n\n${url}`;
 
-    // Try Web Share API with image if available (mobile)
+    // Try Web Share API (mobile)
     if (navigator.share) {
       try {
-        // If image URL is provided, create polaroid version and share it
-        if (imageUrl && imageUrl.startsWith('data:image/')) {
-          try {
-            // Create polaroid-styled image
-            const polaroidBlob = await createPolaroidImage(imageUrl);
-            const file = new File([polaroidBlob], 'memory-polaroid.jpg', { type: 'image/jpeg' });
+        // STRATEGY: Share text+link as primary content
+        // Note: iOS quick share (contact shortcuts) only supports image OR text, not both
+        // We prioritize text+link because it's more useful (user can click and see all songs)
+        // Image can be shared separately if needed via WhatsApp/Messages apps
 
-            // Check if files can be shared
-            if (navigator.canShare && navigator.canShare({ files: [file] })) {
-              // Try sharing with both text and file
-              try {
-                await navigator.share({
-                  title: 'Songs That Feel Like This',
-                  text: fullMessage,
-                  files: [file],
-                });
-                return;
-              } catch (shareErr) {
-                console.log('Could not share both file and text:', shareErr);
-                // Some platforms don't support both - try file only
-                try {
-                  await navigator.share({
-                    files: [file],
-                  });
-                  // If file-only share worked, also copy text to clipboard
-                  await navigator.clipboard.writeText(fullMessage);
-                  setCopied(true);
-                  setTimeout(() => setCopied(false), 2000);
-                  return;
-                } catch (fileErr) {
-                  console.log('Could not share file:', fileErr);
-                }
-              }
-            }
-          } catch (err) {
-            console.log('Could not create polaroid image to share:', err);
-            // Fall through to text-only share
-          }
-        }
-
-        // Text-only share (fallback or no image)
         await navigator.share({
           title: 'Songs That Feel Like This',
           text: fullMessage,
         });
         return;
-      } catch (err) {
+      } catch (err: any) {
+        // If user cancelled, don't show error
+        if (err.name === 'AbortError') {
+          return;
+        }
         console.log('Share failed:', err);
         // Fall through to clipboard
       }
