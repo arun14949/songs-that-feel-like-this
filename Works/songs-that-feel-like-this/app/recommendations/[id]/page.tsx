@@ -63,11 +63,9 @@ export default function RecommendationPage({
             // Loading state with skeleton
             <>
               {/* Polaroid Skeleton */}
-              <div className="mb-10 flex flex-col items-center">
-                <div className="w-[280px] animate-pulse">
-                  <div className="bg-gray-200 rounded-lg" style={{ aspectRatio: '280/201', height: '201px' }} />
-                  <div className="mt-4 h-8 bg-gray-200 rounded w-24 mx-auto" />
-                </div>
+              <div className="mb-10 w-full animate-pulse">
+                <div className="bg-gray-200 rounded-lg w-full" style={{ aspectRatio: '280/201' }} />
+                <div className="mt-4 h-8 bg-gray-200 rounded w-24 mx-auto" />
               </div>
 
               {/* Section Heading */}

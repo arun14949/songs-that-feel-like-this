@@ -68,24 +68,18 @@ export default function ShareButton({ imageUrl }: ShareButtonProps = {}) {
   };
 
   const handleShare = async () => {
+    playClick();
+
     const url = window.location.href;
     const shareText = 'Check out these song recommendations based on my image!';
     const fullMessage = `${shareText}\n\n${url}`;
 
     // Desktop: No Web Share API, just copy to clipboard
     if (!navigator.share) {
-      // Set copied state BEFORE playing click sound
-      setCopied(true);
-      console.log('Set copied to true');
-
-      // Play click sound
-      playClick();
-
       try {
         await navigator.clipboard.writeText(fullMessage);
         console.log('Text copied to clipboard successfully');
-
-        // Reset after 2 seconds
+        setCopied(true);
         setTimeout(() => {
           console.log('Resetting copied state');
           setCopied(false);
@@ -102,17 +96,14 @@ export default function ShareButton({ imageUrl }: ShareButtonProps = {}) {
         try {
           const success = document.execCommand('copy');
           console.log('Legacy copy success:', success);
-          if (!success) {
-            // If copy failed, reset the copied state
-            setCopied(false);
-          } else {
+          if (success) {
+            setCopied(true);
             setTimeout(() => {
               setCopied(false);
             }, 2000);
           }
         } catch (e) {
           console.error('Legacy copy failed:', e);
-          setCopied(false);
         }
         document.body.removeChild(textArea);
       }
