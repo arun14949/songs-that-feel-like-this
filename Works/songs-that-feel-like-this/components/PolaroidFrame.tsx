@@ -36,7 +36,7 @@ export default function PolaroidFrame({
 
   return (
     <div className={`inline-block ${className}`}>
-      <div className={`bg-[#fbfbfb] border border-gray-100 shadow-[0px_10px_16px_0px_rgba(91,84,70,0.2)] p-4 pb-6 transform ${noRotation ? '' : 'rotate-2'}`}>
+      <div className={`bg-[#fbfbfb] border border-gray-100 p-4 pb-6 transform ${noRotation ? '' : 'rotate-2'} ${loading ? '' : 'shadow-[0px_10px_16px_0px_rgba(91,84,70,0.2)]'}`}>
         {/* Image Container with Paper Texture - Lottie overlay stays within this boundary */}
         <div className={`relative w-full overflow-hidden bg-[#212121]`} style={{ aspectRatio: imageAspect }}>
           {/* Base Image */}
@@ -71,8 +71,13 @@ export default function PolaroidFrame({
         {/* Caption - Below image area */}
         <div className="mt-6 transform -rotate-1 min-h-[24px]">
           {loading && loadingMessage ? (
-            <p className="font-[family-name:var(--font-serif)] text-base text-[#212121] text-center tracking-wide animate-pulse">
-              {loadingMessage}
+            <p className="font-[family-name:var(--font-serif)] text-base text-[#212121] text-center tracking-wide">
+              {loadingMessage.replace('...', '')}
+              <span className="inline-flex">
+                <span className="animate-[dot-pulse_1.4s_infinite]">.</span>
+                <span className="animate-[dot-pulse_1.4s_infinite_0.2s]">.</span>
+                <span className="animate-[dot-pulse_1.4s_infinite_0.4s]">.</span>
+              </span>
             </p>
           ) : caption ? (
             <div className="flex justify-center">
@@ -80,6 +85,32 @@ export default function PolaroidFrame({
             </div>
           ) : null}
         </div>
+
+        {/* Dot animation styles */}
+        {loading && (
+          <style jsx>{`
+            @keyframes dot-pulse {
+              0%, 20% {
+                opacity: 0;
+              }
+              50% {
+                opacity: 1;
+              }
+              100% {
+                opacity: 0;
+              }
+            }
+            .animate-\\[dot-pulse_1\\.4s_infinite\\] {
+              animation: dot-pulse 1.4s infinite;
+            }
+            .animate-\\[dot-pulse_1\\.4s_infinite_0\\.2s\\] {
+              animation: dot-pulse 1.4s infinite 0.2s;
+            }
+            .animate-\\[dot-pulse_1\\.4s_infinite_0\\.4s\\] {
+              animation: dot-pulse 1.4s infinite 0.4s;
+            }
+          `}</style>
+        )}
 
         {/* Tape accent at top */}
         <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-24 h-8 bg-[rgba(255,255,255,0.4)] backdrop-blur-[1px] border border-[rgba(255,255,255,0.2)] border-solid" />
