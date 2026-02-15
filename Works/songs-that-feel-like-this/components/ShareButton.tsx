@@ -98,37 +98,8 @@ export default function ShareButton({ imageUrl }: ShareButtonProps = {}) {
       return;
     }
 
-    // Mobile: Try to share with image if available (for WhatsApp)
-    // This shows both text-only option (for quick share) and image option (for WhatsApp)
-    if (imageUrl && imageUrl.startsWith('data:image/')) {
-      try {
-        const polaroidBlob = await createPolaroidImage(imageUrl);
-        const file = new File([polaroidBlob], 'memory-polaroid.jpg', { type: 'image/jpeg' });
-
-        // Check if files can be shared
-        if (navigator.canShare && navigator.canShare({ files: [file] })) {
-          // Share with both image and text
-          // iOS will show: Quick share (text-only) + WhatsApp/Messages (can handle both)
-          try {
-            await navigator.share({
-              title: 'Songs That Feel Like This',
-              text: fullMessage,
-              files: [file],
-            });
-            return;
-          } catch (shareErr: any) {
-            if (shareErr.name === 'AbortError') {
-              return; // User cancelled
-            }
-            console.log('Could not share with image, falling back to text-only:', shareErr);
-          }
-        }
-      } catch (err) {
-        console.log('Could not create polaroid image:', err);
-      }
-    }
-
-    // Fallback: Text-only share (for mobile without image or when image share fails)
+    // Mobile: Share text-only (for quick share to get text+link)
+    // iOS quick share prioritizes text when no files are included
     try {
       await navigator.share({
         title: 'Songs That Feel Like This',
@@ -138,7 +109,7 @@ export default function ShareButton({ imageUrl }: ShareButtonProps = {}) {
       if (err.name === 'AbortError') {
         return; // User cancelled
       }
-      console.log('Share failed:', err);
+      console.log('Text-only share failed:', err);
     }
   };
 
