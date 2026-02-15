@@ -67,8 +67,10 @@ export default function Home() {
       const { tracks }: { tracks: SpotifyTrack[] } = await spotifyResponse.json();
 
       if (tracks.length === 0) {
-        throw new Error('No songs found on Spotify');
+        throw new Error('Could not find these songs on Spotify. Please try a different image or try again.');
       }
+
+      console.log(`Found ${tracks.length} songs on Spotify out of ${songs.length} recommended`);
 
       // Step 3: Save recommendation
       const saveResponse = await fetch('/api/save', {
@@ -83,7 +85,10 @@ export default function Home() {
 
       const { id } = await saveResponse.json();
 
-      // Step 4: Redirect to results
+      // Step 4: Stop ambient music before redirecting
+      stopAmbient();
+
+      // Step 5: Redirect to results
       router.push(`/recommendations/${id}`);
     } catch (err: any) {
       setError(err.message || 'Something went wrong. Please try again.');
