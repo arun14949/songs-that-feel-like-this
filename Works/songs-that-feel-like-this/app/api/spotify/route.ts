@@ -19,12 +19,15 @@ export async function POST(request: NextRequest) {
       console.log(`${i + 1}. "${song.title}" by ${song.artist}`);
     });
 
-    // Search for each song on Spotify
-    const searchPromises = songs.map(song =>
-      searchTrack(song.title, song.artist)
-    );
-
-    const results = await Promise.all(searchPromises);
+    // Search for each song on Spotify SEQUENTIALLY to avoid rate limiting
+    // Instead of Promise.all (parallel), we do one at a time
+    const results: (SpotifyTrack | null)[] = [];
+    for (const song of songs) {
+      const track = await searchTrack(song.title, song.artist);
+      results.push(track);
+      // Small delay between songs to respect rate limits
+      await new Promise(resolve => setTimeout(resolve, 200));
+    }
 
     // Filter out null results (songs not found on Spotify)
     const tracks = results.filter(

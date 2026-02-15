@@ -43,6 +43,9 @@ async function getAccessToken(): Promise<string> {
   return cachedToken.access_token;
 }
 
+// Helper to add delay between requests
+const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
 export async function searchTrack(title: string, artist: string): Promise<SpotifyTrack | null> {
   const accessToken = await getAccessToken();
 
@@ -58,6 +61,9 @@ export async function searchTrack(title: string, artist: string): Promise<Spotif
 
   try {
     for (const query of searchStrategies) {
+      // Add small delay between strategy attempts to avoid rate limiting
+      await delay(100);
+
       const response = await axios.get('https://api.spotify.com/v1/search', {
         headers: {
           'Authorization': `Bearer ${accessToken}`,
@@ -103,7 +109,41 @@ export async function searchTrack(title: string, artist: string): Promise<Spotif
     // If all strategies failed
     console.log(`No Spotify match found for: ${title} by ${artist}`);
     return null;
-  } catch (error) {
+  } catch (error: any) {
+    // Check if it's a rate limit error
+    if (error.response?.status === 429) {
+      const retryAfter = error.response.headers['retry-after'];
+      console.error(`Spotify rate limit hit. Retry after: ${retryAfter} seconds`);
+      // Wait and retry once
+      await delay(parseInt(retryAfter || '2') * 1000);
+      try {
+        // Retry with just the first strategy
+        const response = await axios.get('https://api.spotify.com/v1/search', {
+          headers: {
+            'Authorization': `Bearer ${accessToken}`,
+          },
+          params: {
+            q: `${title} ${artist}`,
+            type: 'track',
+            limit: 1,
+          },
+        });
+        if (response.data.tracks.items.length > 0) {
+          const track = response.data.tracks.items[0];
+          return {
+            id: track.id,
+            name: track.name,
+            artist: track.artists[0].name,
+            albumArt: track.album.images[0]?.url || '',
+            embedUrl: `https://open.spotify.com/embed/track/${track.id}`,
+            spotifyUrl: track.external_urls.spotify,
+            previewUrl: track.preview_url,
+          };
+        }
+      } catch (retryError) {
+        console.error('Retry failed:', retryError);
+      }
+    }
     console.error('Error searching Spotify:', error);
     return null;
   }
