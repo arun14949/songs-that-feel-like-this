@@ -36,7 +36,7 @@ export default function PolaroidFrame({
 
   return (
     <div className={`inline-block ${className}`}>
-      <div className={`bg-[#fbfbfb] border border-gray-100 p-4 pb-6 transform ${noRotation ? '' : 'rotate-2'} ${loading ? '' : 'shadow-[0px_10px_16px_0px_rgba(91,84,70,0.2)]'}`}>
+      <div className={`relative bg-[#fbfbfb] border border-gray-100 p-4 pb-6 transform ${noRotation ? '' : 'rotate-2'} ${loading ? '' : 'shadow-[0px_10px_16px_0px_rgba(91,84,70,0.2)]'}`}>
         {/* Image Container with Paper Texture - Lottie overlay stays within this boundary */}
         <div className={`relative w-full overflow-hidden bg-[#212121]`} style={{ aspectRatio: imageAspect }}>
           {/* Base Image */}
