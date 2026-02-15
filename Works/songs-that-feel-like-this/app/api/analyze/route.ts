@@ -52,10 +52,17 @@ Analyze the image thoroughly:
 
 # SPECIAL CONTEXT RULES
 
-**Celebrity/Movie Scene Detection**:
-- If image shows Bollywood/regional cinema actor or movie scene:
-  - Recommend songs from THEIR movies first (2-3 tracks)
-  - Then add mood-matching regional tracks
+**Celebrity/Movie Scene Detection** (HIGHEST PRIORITY):
+- Look VERY CAREFULLY for Indian actors, especially Malayalam, Tamil, Telugu, Kannada cinema
+- Common Malayalam actors to recognize: Mohanlal, Mammootty, Prithviraj, Fahadh Faasil, Nivin Pauly, Dulquer Salmaan, Tovino Thomas
+- Common Tamil actors: Rajinikanth, Kamal Haasan, Vijay, Ajith, Suriya, Vikram, Dhanush
+- Common Bollywood actors: Shah Rukh Khan, Aamir Khan, Salman Khan, Hrithik Roshan, Ranbir Kapoor, Ranveer Singh
+- If you identify ANY Indian actor or recognize a movie scene:
+  - MUST include 3-4 songs from THEIR iconic movies
+  - For Mohanlal: Devadoothan (Ennennum Kannettante, Aa Raathri Manju Peythu), Iruvar, Vanaprastham, Drishyam, Spadikam
+  - For Shah Rukh Khan: DDLJ, Kal Ho Naa Ho, Swades, Chennai Express
+  - For Rajinikanth: Enthiran, Sivaji, Muthu, Kabali
+- Then fill remaining slots with mood-matching regional tracks
 
 **Motorsports/F1 Context**:
 - If F1 car, racing, motorsports visible:
@@ -106,7 +113,7 @@ RESPOND ONLY WITH VALID JSON. NO MARKDOWN, NO ADDITIONAL TEXT.`,
           content: [
             {
               type: 'text',
-              text: 'Analyze this image and recommend 5-10 songs (aim for 8) that match its mood and context. Follow the Indian-music-first approach with cultural intelligence. STRICT LIMIT: Maximum 2 A.R. Rahman songs only.',
+              text: 'Analyze this image and recommend 5-10 songs (aim for 8) that match its mood and context. Follow the Indian-music-first approach with cultural intelligence. STRICT LIMIT: Maximum 2 A.R. Rahman songs only. IMPORTANT: If you see any Indian actor (Mohanlal, Mammootty, Shah Rukh Khan, Rajinikanth, etc.) or recognize a movie scene, you MUST include 3-4 songs from their movies.',
             },
             {
               type: 'image_url',

@@ -72,15 +72,11 @@ export default function RecommendationPage({
 
               {/* Section Heading */}
               <div className="mb-6 flex items-center gap-2 px-1">
-                <div className="flex-1 relative h-0">
-                  <img src="/line-3.svg" alt="" className="absolute inset-y-[-6px] left-0 right-0 w-full" />
-                </div>
-                <h2 className="font-[family-name:var(--font-serif)] font-bold text-lg text-[#212121] tracking-wide text-center leading-tight whitespace-pre-wrap">
+                <div className="flex-1 h-px bg-[#8b4513]" />
+                <h2 className="font-[family-name:var(--font-serif)] font-bold text-lg text-[#212121] tracking-wide text-center leading-tight whitespace-pre-wrap px-3">
                   Your Song{'\n'}Recommendations
                 </h2>
-                <div className="flex-1 relative h-0">
-                  <img src="/line-4.svg" alt="" className="absolute inset-y-[-6px] left-0 right-0 w-full" />
-                </div>
+                <div className="flex-1 h-px bg-[#8b4513]" />
               </div>
 
               {/* Skeleton Loader */}
@@ -134,15 +130,11 @@ export default function RecommendationPage({
 
               {/* Section Heading with Decorative Lines */}
               <div className="mb-6 flex items-center gap-2 px-1">
-                <div className="flex-1 relative h-0">
-                  <img src="/line-3.svg" alt="" className="absolute inset-y-[-6px] left-0 right-0 w-full" />
-                </div>
-                <h2 className="font-[family-name:var(--font-serif)] font-bold text-lg text-[#212121] tracking-wide text-center leading-tight whitespace-pre-wrap">
+                <div className="flex-1 h-px bg-[#8b4513]" />
+                <h2 className="font-[family-name:var(--font-serif)] font-bold text-lg text-[#212121] tracking-wide text-center leading-tight whitespace-pre-wrap px-3">
                   Your Song{'\n'}Recommendations
                 </h2>
-                <div className="flex-1 relative h-0">
-                  <img src="/line-4.svg" alt="" className="absolute inset-y-[-6px] left-0 right-0 w-full" />
-                </div>
+                <div className="flex-1 h-px bg-[#8b4513]" />
               </div>
 
               {/* Song Recommendations */}
