@@ -98,48 +98,33 @@ export default function RecommendationPage({
   return (
     <>
       {/* App Bar */}
-      <AppBar title="Your Soundtrack" />
+      <AppBar title="Your Song Recommendations" />
 
       {/* Main Content with top padding */}
-      <main className="relative min-h-screen pt-24 pb-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-3xl mx-auto z-10">
-          {/* Polaroid Frame with Uploaded Image */}
+      <main className="relative min-h-screen pt-20 pb-12 px-6">
+        <div className="max-w-sm mx-auto z-10">
+          {/* Polaroid Frame with Uploaded Image and Share Button */}
           {recommendation.imageUrl && (
-            <div className="mb-8 flex justify-center">
-              <PolaroidFrame imageUrl={recommendation.imageUrl} className="w-64" />
+            <div className="mb-10">
+              <PolaroidFrame imageUrl={recommendation.imageUrl} className="w-full" />
+              {/* Share Button inside polaroid */}
+              <div className="-mt-8">
+                <ShareButton />
+              </div>
             </div>
           )}
 
-          {/* Share Button */}
-          <div className="mb-8 text-center">
-            <ShareButton />
+          {/* Section Heading with Decorative Lines */}
+          <div className="mb-6 flex items-center gap-2 px-1">
+            <div className="h-px bg-[#8b4513] flex-1" />
+            <h2 className="font-[family-name:var(--font-serif)] text-lg text-[#212121] tracking-wide text-center leading-tight whitespace-pre-wrap">
+              Your Song{'\n'}Recommendations
+            </h2>
+            <div className="h-px bg-[#8b4513] flex-1" />
           </div>
 
-        {/* Song Recommendations */}
-        <SongRecommendations songs={recommendation.songs} />
-
-          {/* Footer */}
-          <div className="mt-16 text-center">
-            <Link
-              href="/"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-cream-50 border border-gray-200 hover:bg-cream-200 text-gray-700 font-[family-name:var(--font-sans)] font-medium rounded-lg transition-colors shadow-sm"
-            >
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 4v16m8-8H4"
-                />
-              </svg>
-              Create Another
-            </Link>
-          </div>
+          {/* Song Recommendations */}
+          <SongRecommendations songs={recommendation.songs} />
         </div>
       </main>
     </>

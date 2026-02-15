@@ -32,15 +32,24 @@ export default function PolaroidFrame({
 
   return (
     <div className={`inline-block ${className}`}>
-      <div className="bg-cream-50 border border-gray-100 shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.1),0px_20px_25px_-5px_rgba(0,0,0,0.15),0px_10px_10px_-5px_rgba(0,0,0,0.04)] p-4 pb-12 transform rotate-2">
-        {/* Image Container - Lottie overlay stays within this boundary */}
-        <div className="bg-[#1a1a1a] border border-gray-200 aspect-[4/5] w-full overflow-hidden relative">
+      <div className="bg-cream-50 border border-gray-100 shadow-[0px_10px_16px_0px_rgba(91,84,70,0.2)] p-4 pb-6 transform rotate-2">
+        {/* Image Container with Paper Texture - Lottie overlay stays within this boundary */}
+        <div className="relative aspect-[4/5] w-full overflow-hidden">
           {/* Base Image */}
           <img
             src={imageUrl}
             alt="Uploaded memory"
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover bg-[#212121]"
           />
+
+          {/* Paper Texture Overlay */}
+          <div className="absolute inset-0 pointer-events-none mix-blend-difference opacity-30">
+            <img
+              src="/textures/paper-texture.png"
+              alt=""
+              className="w-full h-full object-cover"
+            />
+          </div>
 
           {/* Lottie Overlay - ONLY inside image area */}
           {loading && animationData && (
@@ -57,17 +66,20 @@ export default function PolaroidFrame({
         </div>
 
         {/* Caption - Below image area */}
-        <div className="mt-2 transform -rotate-1 min-h-[28px]">
+        <div className="mt-6 transform -rotate-1 min-h-[24px]">
           {loading && loadingMessage ? (
-            <p className="font-[family-name:var(--font-sans)] text-sm text-gray-700 text-center animate-pulse">
+            <p className="font-[family-name:var(--font-serif)] text-base text-[#212121] text-center tracking-wide animate-pulse">
               {loadingMessage}
             </p>
           ) : (
-            <p className="font-[family-name:var(--font-handwriting)] text-xl text-gray-700 text-center">
+            <p className="font-[family-name:var(--font-serif)] text-base text-[#212121] text-center tracking-wide">
               {caption}
             </p>
           )}
         </div>
+
+        {/* Tape accent at top */}
+        <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-24 h-8 bg-[rgba(255,255,255,0.4)] backdrop-blur-[1px] border border-[rgba(255,255,255,0.2)] border-solid" />
       </div>
     </div>
   );

@@ -167,8 +167,8 @@ export default function Home() {
 
       {/* Footer */}
       <footer className="mt-auto pt-16 text-center z-10">
-        <p className="font-[family-name:var(--font-sans)] text-[10px] text-gray-400 tracking-[0.25px]">
-          POWERED BY OPENAI & SPOTIFY
+        <p className="font-[family-name:var(--font-sans)] text-[12px] text-[#b2b2b2] tracking-wide">
+          © Inspired Monster
         </p>
       </footer>
     </main>

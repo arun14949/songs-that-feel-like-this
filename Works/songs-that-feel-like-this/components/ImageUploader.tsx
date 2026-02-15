@@ -104,7 +104,7 @@ export default function ImageUploader({ onUpload, disabled }: ImageUploaderProps
             onClick={handleClick}
           >
             {/* Polaroid outer frame */}
-            <div className="bg-cream-50 border border-gray-100 shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.1),0px_20px_25px_-5px_rgba(0,0,0,0.15),0px_10px_10px_-5px_rgba(0,0,0,0.04)] p-4 pb-12">
+            <div className="bg-cream-50 border border-gray-100 shadow-[0px_10px_16px_0px_rgba(91,84,70,0.2)] p-4 pb-6 relative">
               <input
                 ref={fileInputRef}
                 type="file"
@@ -114,49 +114,66 @@ export default function ImageUploader({ onUpload, disabled }: ImageUploaderProps
                 disabled={disabled}
               />
 
-              {/* Image area */}
-              <div className="bg-[#1a1a1a] border border-gray-200 aspect-[4/5] w-full overflow-hidden relative">
+              {/* Image area with paper texture */}
+              <div className="bg-[#212121] aspect-[4/5] w-full overflow-hidden relative">
                 {preview ? (
-                  <img
-                    src={preview}
-                    alt="Preview"
-                    className="w-full h-full object-cover"
-                  />
+                  <>
+                    <img
+                      src={preview}
+                      alt="Preview"
+                      className="w-full h-full object-cover"
+                    />
+                    {/* Paper Texture Overlay */}
+                    <div className="absolute inset-0 pointer-events-none mix-blend-difference opacity-30">
+                      <img
+                        src="/textures/paper-texture.png"
+                        alt=""
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  </>
                 ) : (
-                  <div className="absolute inset-0 flex flex-col items-center justify-center text-gray-300">
-                    {/* Camera icon */}
-                    <svg className="w-11 h-10 mb-3 opacity-90" viewBox="0 0 44 40" fill="currentColor">
-                      <path d="M22 0C9.85 0 0 8.95 0 20s9.85 20 22 20 22-8.95 22-20S34.15 0 22 0zm0 30c-5.52 0-10-4.48-10-10s4.48-10 10-10 10 4.48 10 10-4.48 10-10 10z" opacity="0.5"/>
-                      <circle cx="22" cy="20" r="6" />
-                    </svg>
+                  <>
+                    <div className="absolute inset-0 flex flex-col items-center justify-center text-gray-300 p-8">
+                      {/* Camera icon */}
+                      <img src="/camera-icon.svg" alt="" className="w-12 h-12 mb-4 opacity-90" />
 
-                    {/* Handwritten text */}
-                    <div className="transform -rotate-2">
-                      <p className="font-[family-name:var(--font-handwriting)] text-2xl opacity-90">
-                        Upload a memory...
+                      {/* Upload text */}
+                      <div className="transform -rotate-2 mb-2">
+                        <p className="font-[family-name:var(--font-serif)] text-lg text-[#fbfbfb]">
+                          Upload a memory
+                        </p>
+                      </div>
+
+                      {/* File requirements */}
+                      <p className="font-[family-name:var(--font-sans)] text-[14px] text-[#757575] tracking-wide mt-1">
+                        JPG, PNG • Max 5MB
                       </p>
                     </div>
-
-                    {/* File requirements */}
-                    <p className="font-[family-name:var(--font-sans)] text-[10px] text-gray-400 tracking-[1px] uppercase mt-4 opacity-50">
-                      JPG, PNG • Max 5MB
-                    </p>
-                  </div>
+                    {/* Paper Texture Overlay */}
+                    <div className="absolute inset-0 pointer-events-none mix-blend-difference opacity-30">
+                      <img
+                        src="/textures/paper-texture.png"
+                        alt=""
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  </>
                 )}
               </div>
 
               {/* Bottom caption area */}
-              <div className="mt-2 transform -rotate-1">
-                <p className="font-[family-name:var(--font-handwriting)] text-xl text-gray-700 text-center">
-                  #mood
+              <div className="mt-6 transform -rotate-1">
+                <p className="font-[family-name:var(--font-serif)] text-base text-[#212121] text-center tracking-wide">
+                  Loading States here...
                 </p>
               </div>
+
+              {/* Tape accent at top */}
+              <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-24 h-8 bg-[rgba(255,255,255,0.4)] backdrop-blur-[1px] border border-[rgba(255,255,255,0.2)] border-solid" />
             </div>
           </div>
         </div>
-
-        {/* Top accent bar (decorative) */}
-        <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-24 h-8 bg-[rgba(255,255,255,0.4)] backdrop-blur-sm border border-[rgba(255,255,255,0.2)] shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1)]" />
       </div>
 
       {error && (

@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import SpotifyPlayer from './SpotifyPlayer';
 import type { SpotifyTrack } from '@/lib/types';
 
 interface SongRecommendationsProps {
@@ -59,28 +58,73 @@ export default function SongRecommendations({ songs }: SongRecommendationsProps)
         <motion.div
           key={song.id}
           variants={itemVariants}
-          className="bg-cream-50 border border-gray-200 rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow duration-300"
+          className="bg-cream-50 rounded-2xl overflow-hidden"
         >
           {/* Song Info and Player */}
           <div className="p-4">
             {/* Song Title and Artist */}
             <div className="mb-4">
-              <h3 className="font-[family-name:var(--font-serif)] text-xl text-gray-900 mb-1">
-                {index + 1}. {song.name}
+              <h3 className="font-[family-name:var(--font-serif)] text-base text-[#212121] leading-tight">
+                {song.name}
               </h3>
-              <p className="font-[family-name:var(--font-sans)] text-gray-600 text-sm">
+              <p className="font-[family-name:var(--font-sans)] text-[#757575] text-sm leading-tight mt-1">
                 {song.artist}
               </p>
             </div>
 
-            {/* Spotify Player */}
-            <SpotifyPlayer
-              trackId={song.id}
-              spotifyUrl={song.spotifyUrl}
-              autoplay={index === 0} // Autoplay first song
-              isPlaying={currentPlayingIndex === index}
-              onPlay={() => handlePlay(index)}
-            />
+            {/* Horizontal Spotify Player */}
+            <div className="bg-[#212121] rounded-2xl p-2 flex gap-2 items-start">
+              {/* Album Art with Play Button */}
+              <div className="relative shrink-0">
+                <div className="w-[90px] h-[90px] bg-gradient-to-br from-gray-800 to-gray-900 rounded-lg overflow-hidden">
+                  {song.albumArt && (
+                    <img
+                      src={song.albumArt}
+                      alt={song.name}
+                      className="w-full h-full object-cover"
+                    />
+                  )}
+                </div>
+                {/* Play Button Overlay */}
+                <button
+                  onClick={() => handlePlay(index)}
+                  className="absolute inset-0 flex items-center justify-center group"
+                >
+                  <div className="w-10 h-10 rounded-full bg-white/90 group-hover:bg-white flex items-center justify-center transition-colors">
+                    <img src="/play-icon.svg" alt="Play" className="w-6 h-6" />
+                  </div>
+                </button>
+              </div>
+
+              {/* Song Details and Actions */}
+              <div className="flex-1 flex flex-col gap-3 py-2 min-w-0">
+                {/* Song Title with Spotify Icon */}
+                <div className="flex gap-2 items-start">
+                  <div className="flex-1 min-w-0">
+                    <h4 className="font-['Montserrat'] font-bold text-sm text-white leading-normal truncate drop-shadow-[0_0_2px_rgba(0,0,0,0.4)]">
+                      {song.name}
+                    </h4>
+                    <p className="font-['Montserrat'] font-normal text-sm text-[#757575] leading-normal truncate drop-shadow-[0_0_2px_rgba(0,0,0,0.4)]">
+                      {song.artist}
+                    </p>
+                  </div>
+                  <img src="/spotify-icon.svg" alt="Spotify" className="w-[18px] h-[18px] shrink-0" />
+                </div>
+
+                {/* Save on Spotify Button */}
+                <a
+                  href={song.spotifyUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 group"
+                >
+                  <img src="/heart-icon.svg" alt="" className="w-6 h-6" />
+                  <span className="font-['Montserrat'] font-medium text-sm text-white drop-shadow-[0_0_2px_rgba(0,0,0,0.4)] group-hover:underline">
+                    Save on Spotify
+                  </span>
+                </a>
+              </div>
+            </div>
           </div>
         </motion.div>
       ))}

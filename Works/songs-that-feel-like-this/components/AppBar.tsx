@@ -11,39 +11,23 @@ export default function AppBar({ title, showBack = true }: AppBarProps) {
   const router = useRouter();
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-cream-50/95 backdrop-blur-sm border-b border-gray-200">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-[rgba(255,255,255,0.1)] backdrop-blur-[4px]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
+        <div className="flex items-center gap-2 h-[72px]">
           {/* Back Button */}
           {showBack && (
             <button
               onClick={() => router.push('/')}
-              className="flex items-center gap-2 text-brown-600 hover:text-brown-700 font-[family-name:var(--font-sans)] font-medium transition-colors"
+              className="flex items-center justify-center w-8 h-8 hover:opacity-80 transition-opacity"
             >
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M15 19l-7-7 7-7"
-                />
-              </svg>
-              Back
+              <img src="/back-icon.svg" alt="Back" className="w-8 h-8" />
             </button>
           )}
 
           {/* Title */}
-          <h1 className="font-[family-name:var(--font-serif)] text-2xl text-gray-800 absolute left-1/2 transform -translate-x-1/2">
+          <h1 className="font-[family-name:var(--font-serif)] text-lg text-[#212121] tracking-wide flex-1 truncate">
             {title}
           </h1>
-
-          {/* Right spacer (for balance) */}
-          <div className="w-16"></div>
         </div>
       </div>
     </header>
