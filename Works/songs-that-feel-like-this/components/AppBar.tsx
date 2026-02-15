@@ -1,6 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
+import { useSounds } from '@/hooks/useSounds';
 
 interface AppBarProps {
   title: string;
@@ -9,6 +10,12 @@ interface AppBarProps {
 
 export default function AppBar({ title, showBack = true }: AppBarProps) {
   const router = useRouter();
+  const { playBackClick } = useSounds();
+
+  const handleBackClick = () => {
+    playBackClick();
+    router.push('/');
+  };
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-[rgba(255,255,255,0.1)] backdrop-blur-[4px]">
@@ -17,7 +24,7 @@ export default function AppBar({ title, showBack = true }: AppBarProps) {
           {/* Back Button */}
           {showBack && (
             <button
-              onClick={() => router.push('/')}
+              onClick={handleBackClick}
               className="flex items-center justify-center w-8 h-8 hover:opacity-80 transition-opacity"
             >
               <img src="/back-icon.svg" alt="Back" className="w-8 h-8" />
