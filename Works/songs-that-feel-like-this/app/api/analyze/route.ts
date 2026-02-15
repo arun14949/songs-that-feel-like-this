@@ -40,7 +40,7 @@ Analyze the image thoroughly:
    - If clearly Indian setting/context: 85% Indian (at least 7-8 out of 10)
 
 2. **Prioritize These Categories** (IN THIS ORDER):
-   - **Indian Indie** (HIGHEST PRIORITY): When Chai Met Toast, Prateek Kuhad, Lifafa, Ankur Tewari, Parvaaz, The Local Train, Ritviz, Anuv Jain, etc.
+   - **Indian Indie** (HIGHEST PRIORITY): When Chai Met Toast, Lifafa, Ankur Tewari, Parvaaz, The Local Train, Ritviz, Anuv Jain, Osho Jain, DIVINE, etc.
    - **Coke Studio** (Pakistan/India): Prioritize heavily for fusion, indie vibes
    - **Regional Cinema OSTs**: Malayalam (Sushin Shyam, Bijibal), Tamil (Santhosh Narayanan, Anirudh), Telugu, Kannada films
    - **Film Soundtracks**: Bollywood when mood-appropriate (NOT generic party songs)
@@ -52,28 +52,40 @@ Analyze the image thoroughly:
    - 1-2 Film Soundtracks/Scores (10-25%)
    - 0-1 International (0-15%)
 
-4. **A.R. Rahman Limit**: STRICT MAXIMUM of 2 tracks TOTAL. No exceptions. If you include A.R. Rahman, count carefully and ensure you don't exceed 2 songs.
+4. **Artist Diversity**:
+   - MAXIMUM 1 Prateek Kuhad song per recommendation (avoid overuse)
+   - MAXIMUM 2 A.R. Rahman songs (strictly enforced)
+   - Vary artists - don't repeat the same artist more than twice
 
-5. **Avoid**: Generic Bollywood party songs, overplayed tracks, predictable choices, over-reliance on film music
+5. **Avoid**: Generic Bollywood party songs, overplayed tracks, predictable choices, over-reliance on film music, excessive Prateek Kuhad
 
 # SPECIAL CONTEXT RULES
 
 **Celebrity/Movie Scene Detection** (HIGHEST PRIORITY):
-- Look VERY CAREFULLY for Indian actors, especially Malayalam, Tamil, Telugu, Kannada cinema
-- Common Malayalam actors to recognize: Mohanlal, Mammootty, Prithviraj, Fahadh Faasil, Nivin Pauly, Dulquer Salmaan, Tovino Thomas
-- Common Tamil actors: Rajinikanth, Kamal Haasan, Vijay, Ajith, Suriya, Vikram, Dhanush
-- Common Bollywood actors: Shah Rukh Khan, Aamir Khan, Salman Khan, Hrithik Roshan, Ranbir Kapoor, Ranveer Singh
-- If you identify ANY Indian actor or recognize a movie scene:
+- Look VERY CAREFULLY for Indian actors and actresses, especially Malayalam, Tamil, Telugu, Kannada cinema
+- **Malayalam actors**: Mohanlal, Mammootty, Prithviraj, Fahadh Faasil, Nivin Pauly, Dulquer Salmaan, Tovino Thomas
+- **Malayalam actresses**: Kalyani Priyadarshan, Nazriya Nazim, Parvathy Thiruvothu, Manju Warrier, Nayanthara
+- **Tamil actors**: Rajinikanth, Kamal Haasan, Vijay, Ajith, Suriya, Vikram, Dhanush
+- **Bollywood actors**: Shah Rukh Khan, Aamir Khan, Salman Khan, Hrithik Roshan, Ranbir Kapoor, Ranveer Singh
+- If you identify ANY Indian actor/actress or recognize a movie scene:
   - MUST include 3-4 songs from THEIR iconic movies
   - For Mohanlal: Devadoothan (Ennennum Kannettante, Aa Raathri Manju Peythu), Iruvar, Vanaprastham, Drishyam, Spadikam
+  - For Kalyani Priyadarshan: Hridayam, Maanaadu, Argentina Fans Kaattoorkadavu, Sesham Mike-il Fathima
   - For Shah Rukh Khan: DDLJ, Kal Ho Naa Ho, Swades, Chennai Express
   - For Rajinikanth: Enthiran, Sivaji, Muthu, Kabali
 - Then fill remaining slots with mood-matching regional tracks
 
-**Motorsports/F1 Context**:
-- If F1 car, racing, motorsports visible:
-  - Include racing cinema scores: Rush (Hans Zimmer), Ford v Ferrari (Marco Beltrami)
-  - Add high-energy Indian tracks: Coke Studio bangers, Bloodywood, indie rock
+**Motorsports/F1/Racing Context** (CRITICAL DETECTION):
+- If you see ANY racing cars, F1 cars, Red Bull Racing, motorsports, racing helmets, or racing tracks:
+  - **PRIORITY**: Include movie soundtracks from racing films:
+    * Rush (2013) - Hans Zimmer score (Lаuda's Theme, Lost But Won, etc.)
+    * Ford v Ferrari / Le Mans '66 (2019) - Marco Beltrami score
+    * Senna (2010) documentary score
+    * Grand Prix (1966) classic score
+  - Include 3-4 racing movie tracks MINIMUM (50% of recommendations)
+  - Add 2-3 high-energy Indian tracks: Bloodywood, Coke Studio bangers, indie rock
+  - Adrenaline, speed, intensity should be the mood
+  - DO NOT recommend calm/romantic Indian indie for racing images
 
 **Weather-Based**:
 - **Rain**: Romantic Malayalam/Tamil tracks (Sushin Shyam, Hesham Abdul Wahab), Bollywood monsoon classics
@@ -119,7 +131,7 @@ RESPOND ONLY WITH VALID JSON. NO MARKDOWN, NO ADDITIONAL TEXT.`,
           content: [
             {
               type: 'text',
-              text: 'Analyze this image and recommend 5-10 songs (aim for 8) that match its mood and context. Follow the Indian-music-first approach with cultural intelligence. STRICT LIMIT: Maximum 2 A.R. Rahman songs only. IMPORTANT: If you see any Indian actor (Mohanlal, Mammootty, Shah Rukh Khan, Rajinikanth, etc.) or recognize a movie scene, you MUST include 3-4 songs from their movies.',
+              text: 'Analyze this image and recommend 5-10 songs (aim for 8) that match its mood and context. Follow the Indian-music-first approach with cultural intelligence. STRICT LIMITS: Maximum 2 A.R. Rahman songs, Maximum 1 Prateek Kuhad song. CRITICAL: If you see F1/racing cars, prioritize Rush and Ford v Ferrari soundtracks (50% racing movie tracks). IMPORTANT: If you see any Indian actor/actress (Mohanlal, Kalyani Priyadarshan, etc.) or recognize a movie scene, you MUST include 3-4 songs from their movies.',
             },
             {
               type: 'image_url',
@@ -163,6 +175,19 @@ RESPOND ONLY WITH VALID JSON. NO MARKDOWN, NO ADDITIONAL TEXT.`,
         !song.artist || !song.artist.toLowerCase().includes('rahman')
       );
       result.songs = [...nonRahmanSongs, ...rahmanSongs.slice(0, 2)];
+    }
+
+    // Validate Prateek Kuhad limit (maximum 1 song)
+    const pratikSongs = result.songs.filter((song: SongSuggestion) =>
+      song.artist && song.artist.toLowerCase().includes('prateek')
+    );
+    if (pratikSongs.length > 1) {
+      console.warn(`Prateek Kuhad songs (${pratikSongs.length}) exceed maximum of 1. Limiting to first 1.`);
+      // Remove excess Prateek songs
+      const nonPratikSongs = result.songs.filter((song: SongSuggestion) =>
+        !song.artist || !song.artist.toLowerCase().includes('prateek')
+      );
+      result.songs = [...nonPratikSongs, ...pratikSongs.slice(0, 1)];
     }
 
     // Ensure song count is between 5-10
