@@ -75,11 +75,15 @@ export default function ShareButton({ imageUrl }: ShareButtonProps = {}) {
     const shareText = 'Check out these song recommendations based on my image!';
     const fullMessage = `${shareText}\n\n${url}`;
 
-    console.log('navigator.share exists:', !!navigator.share);
-    console.log('Is mobile/share API supported:', !!navigator.share);
+    // Check if we're on mobile (touchscreen device with small screen)
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ||
+                     (navigator.maxTouchPoints > 0 && window.innerWidth < 768);
 
-    // Desktop: No Web Share API, just copy to clipboard
-    if (!navigator.share) {
+    console.log('isMobile:', isMobile);
+    console.log('navigator.share exists:', !!navigator.share);
+
+    // Desktop OR Web Share not available: Copy to clipboard
+    if (!isMobile || !navigator.share) {
       console.log('Using desktop clipboard approach');
       try {
         console.log('Attempting clipboard write...');
@@ -123,8 +127,7 @@ export default function ShareButton({ imageUrl }: ShareButtonProps = {}) {
       return;
     }
 
-    // Mobile: Share text-only (for quick share to get text+link)
-    // iOS quick share prioritizes text when no files are included
+    // Mobile with Web Share API: Use native share
     console.log('Using mobile share API');
     try {
       await navigator.share({
