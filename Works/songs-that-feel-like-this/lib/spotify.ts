@@ -49,35 +49,20 @@ const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 export async function searchTrack(title: string, artist: string): Promise<SpotifyTrack | null> {
   const accessToken = await getAccessToken();
 
-  // Try multiple search strategies in order of specificity
-  const searchStrategies = [
-    // Strategy 1: Exact match with quotes
-    `track:"${title}" artist:"${artist}"`,
-    // Strategy 2: Without quotes (more flexible)
-    `${title} ${artist}`,
-    // Strategy 3: Just the track name
-    title,
-  ];
-
   try {
-    for (const query of searchStrategies) {
-      // Add small delay between strategy attempts to avoid rate limiting
-      await delay(100);
+    // Start with most flexible search (works best for most cases)
+    const response = await axios.get('https://api.spotify.com/v1/search', {
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+      },
+      params: {
+        q: `${title} ${artist}`,
+        type: 'track',
+        limit: 10, // Get more results for better matching
+      },
+    });
 
-      const response = await axios.get('https://api.spotify.com/v1/search', {
-        headers: {
-          'Authorization': `Bearer ${accessToken}`,
-        },
-        params: {
-          q: query,
-          type: 'track',
-          limit: 5, // Get top 5 to find best match
-        },
-      });
-
-      if (response.data.tracks.items.length === 0) {
-        continue; // Try next strategy
-      }
+    if (response.data.tracks.items.length > 0) {
 
       // Find the best matching track
       const tracks = response.data.tracks.items;
@@ -106,7 +91,7 @@ export async function searchTrack(title: string, artist: string): Promise<Spotif
       };
     }
 
-    // If all strategies failed
+    // If no results found
     console.log(`No Spotify match found for: ${title} by ${artist}`);
     return null;
   } catch (error: any) {

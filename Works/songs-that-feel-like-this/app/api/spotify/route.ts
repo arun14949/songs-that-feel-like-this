@@ -22,11 +22,14 @@ export async function POST(request: NextRequest) {
     // Search for each song on Spotify SEQUENTIALLY to avoid rate limiting
     // Instead of Promise.all (parallel), we do one at a time
     const results: (SpotifyTrack | null)[] = [];
-    for (const song of songs) {
+    for (let i = 0; i < songs.length; i++) {
+      const song = songs[i];
       const track = await searchTrack(song.title, song.artist);
       results.push(track);
-      // Small delay between songs to respect rate limits
-      await new Promise(resolve => setTimeout(resolve, 200));
+      // Small delay between songs to respect rate limits (except after last song)
+      if (i < songs.length - 1) {
+        await new Promise(resolve => setTimeout(resolve, 100));
+      }
     }
 
     // Filter out null results (songs not found on Spotify)
