@@ -98,39 +98,16 @@ export async function searchTrack(title: string, artist: string): Promise<Spotif
   } catch (error: any) {
     // Check if it's a rate limit error
     if (error.response?.status === 429) {
-      const retryAfter = error.response.headers['retry-after'];
+      const retryAfter = error.response.headers['retry-after'] || '60';
       console.error(`Spotify rate limit hit. Retry after: ${retryAfter} seconds`);
-      // Wait and retry once
-      await delay(parseInt(retryAfter || '2') * 1000);
-      try {
-        // Retry with just the first strategy
-        const response = await axios.get('https://api.spotify.com/v1/search', {
-          headers: {
-            'Authorization': `Bearer ${accessToken}`,
-          },
-          params: {
-            q: `${title} ${artist}`,
-            type: 'track',
-            limit: 1,
-          },
-          timeout: 2000, // 2 second timeout (reduced to fit Vercel 10s limit)
-        });
-        if (response.data.tracks.items.length > 0) {
-          const track = response.data.tracks.items[0];
-          return {
-            id: track.id,
-            name: track.name,
-            artist: track.artists[0].name,
-            albumArt: track.album.images[0]?.url || '',
-            embedUrl: `https://open.spotify.com/embed/track/${track.id}`,
-            spotifyUrl: track.external_urls.spotify,
-            previewUrl: track.preview_url,
-          };
-        }
-      } catch (retryError) {
-        console.error('Retry failed:', retryError);
-      }
+
+      // DON'T wait - throw error with retry-after info so it propagates to frontend
+      const rateLimitError: any = new Error(`Spotify rate limit reached. Please try again in ${Math.ceil(parseInt(retryAfter) / 60)} minutes.`);
+      rateLimitError.isRateLimit = true;
+      rateLimitError.retryAfter = parseInt(retryAfter);
+      throw rateLimitError;
     }
+
     console.error('Error searching Spotify:', error);
     return null;
   }

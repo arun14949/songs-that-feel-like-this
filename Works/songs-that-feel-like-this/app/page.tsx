@@ -50,9 +50,9 @@ export default function Home() {
       });
 
       if (!spotifyResponse.ok) {
-        // Handle Vercel 584 timeout error (returns HTML, not JSON)
-        if (spotifyResponse.status === 584) {
-          throw new Error('Request took too long. Please try again with a different image.');
+        // Handle timeout errors (504 Gateway Timeout, 584 Vercel timeout)
+        if (spotifyResponse.status === 504 || spotifyResponse.status === 584) {
+          throw new Error('Spotify search took too long. You may have hit the rate limit. Please wait a few minutes and try again.');
         }
 
         // Try to parse JSON error, fallback if not JSON (prevents "Unexpected token" errors)
@@ -60,12 +60,13 @@ export default function Home() {
           error: 'Failed to find songs on Spotify'
         }));
 
-        // If rate limited, show retry-after time
-        if (spotifyResponse.status === 429 && errorData.retryAfter) {
-          throw new Error(`Spotify rate limit reached. Please wait ${errorData.retryAfter} seconds and try again.`);
+        // Handle rate limit errors with specific retry-after time
+        if (spotifyResponse.status === 429 && errorData.retryAfterMinutes) {
+          throw new Error(`Spotify rate limit reached. Please try again in ${errorData.retryAfterMinutes} minute${errorData.retryAfterMinutes > 1 ? 's' : ''}.`);
         }
 
-        throw new Error(errorData.error || 'Failed to fetch Spotify data');
+        // Fallback for other errors
+        throw new Error(errorData.error || 'Could not find songs on Spotify. Please try again.');
       }
 
       const { tracks }: { tracks: SpotifyTrack[] } = await spotifyResponse.json();

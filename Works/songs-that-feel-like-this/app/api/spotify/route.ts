@@ -57,15 +57,31 @@ export async function POST(request: NextRequest) {
   } catch (error: any) {
     console.error('Error fetching Spotify data:', error);
 
-    // Check if it's a rate limit error from any of the search requests
-    if (error.response?.status === 429) {
-      const retryAfter = error.response.headers['retry-after'] || '60';
-      console.error(`Spotify rate limit hit. Retry after: ${retryAfter} seconds`);
+    // Check if it's a rate limit error thrown by searchTrack()
+    if (error.isRateLimit && error.retryAfter) {
+      const retryAfterMinutes = Math.ceil(error.retryAfter / 60);
+      console.error(`Spotify rate limit hit. Retry after: ${error.retryAfter} seconds (${retryAfterMinutes} minutes)`);
 
       return NextResponse.json(
         {
-          error: `Spotify rate limit reached. Please wait ${retryAfter} seconds and try again.`,
-          retryAfter: parseInt(retryAfter)
+          error: `Spotify rate limit reached. Please try again in ${retryAfterMinutes} minute${retryAfterMinutes > 1 ? 's' : ''}.`,
+          retryAfter: error.retryAfter,
+          retryAfterMinutes
+        },
+        { status: 429 }
+      );
+    }
+
+    // Also check for direct axios 429 errors (fallback)
+    if (error.response?.status === 429) {
+      const retryAfter = error.response.headers['retry-after'] || '60';
+      const retryAfterMinutes = Math.ceil(parseInt(retryAfter) / 60);
+
+      return NextResponse.json(
+        {
+          error: `Spotify rate limit reached. Please try again in ${retryAfterMinutes} minute${retryAfterMinutes > 1 ? 's' : ''}.`,
+          retryAfter: parseInt(retryAfter),
+          retryAfterMinutes
         },
         { status: 429 }
       );
