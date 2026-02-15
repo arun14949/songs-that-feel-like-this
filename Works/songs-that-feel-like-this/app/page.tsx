@@ -115,16 +115,7 @@ export default function Home() {
             />
           </div>
         ) : (
-          <>
-            <ImageUploader onUpload={handleImageUpload} disabled={loading} />
-
-            {/* Tagline */}
-            <div className="mt-8 text-center max-w-sm">
-              <p className="font-[family-name:var(--font-serif)] italic text-lg text-[#212121] leading-relaxed opacity-90">
-                "Let the AI discover the perfect melody for your visual moments."
-              </p>
-            </div>
-          </>
+          <ImageUploader onUpload={handleImageUpload} disabled={loading} />
         )}
 
         {/* Error Display - shown below polaroid or in main area */}
