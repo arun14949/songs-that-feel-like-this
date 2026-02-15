@@ -68,15 +68,21 @@ export default function ShareButton({ imageUrl }: ShareButtonProps = {}) {
   };
 
   const handleShare = useCallback(async () => {
+    console.log('handleShare called');
     playClick();
 
     const url = window.location.href;
     const shareText = 'Check out these song recommendations based on my image!';
     const fullMessage = `${shareText}\n\n${url}`;
 
+    console.log('navigator.share exists:', !!navigator.share);
+    console.log('Is mobile/share API supported:', !!navigator.share);
+
     // Desktop: No Web Share API, just copy to clipboard
     if (!navigator.share) {
+      console.log('Using desktop clipboard approach');
       try {
+        console.log('Attempting clipboard write...');
         await navigator.clipboard.writeText(fullMessage);
         console.log('Text copied to clipboard successfully');
 
@@ -93,6 +99,7 @@ export default function ShareButton({ imageUrl }: ShareButtonProps = {}) {
       } catch (err) {
         console.error('Failed to copy to clipboard:', err);
         // Try legacy method
+        console.log('Trying legacy copy method');
         const textArea = document.createElement('textarea');
         textArea.value = fullMessage;
         textArea.style.position = 'fixed';
@@ -118,6 +125,7 @@ export default function ShareButton({ imageUrl }: ShareButtonProps = {}) {
 
     // Mobile: Share text-only (for quick share to get text+link)
     // iOS quick share prioritizes text when no files are included
+    console.log('Using mobile share API');
     try {
       await navigator.share({
         title: 'Songs That Feel Like This',
