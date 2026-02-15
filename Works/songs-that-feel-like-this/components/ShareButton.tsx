@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { useSounds } from '@/hooks/useSounds';
 
 interface ShareButtonProps {
@@ -67,7 +67,7 @@ export default function ShareButton({ imageUrl }: ShareButtonProps = {}) {
     });
   };
 
-  const handleShare = async () => {
+  const handleShare = useCallback(async () => {
     playClick();
 
     const url = window.location.href;
@@ -79,7 +79,13 @@ export default function ShareButton({ imageUrl }: ShareButtonProps = {}) {
       try {
         await navigator.clipboard.writeText(fullMessage);
         console.log('Text copied to clipboard successfully');
-        setCopied(true);
+
+        // Use functional update to ensure state changes
+        setCopied((prev) => {
+          console.log('Setting copied from', prev, 'to true');
+          return true;
+        });
+
         setTimeout(() => {
           console.log('Resetting copied state');
           setCopied(false);
@@ -123,7 +129,7 @@ export default function ShareButton({ imageUrl }: ShareButtonProps = {}) {
       }
       console.log('Text-only share failed:', err);
     }
-  };
+  }, [playClick]);
 
   return (
     <button
