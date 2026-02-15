@@ -23,7 +23,7 @@ export default function PolaroidFrame({
   // Load Lottie JSON
   useEffect(() => {
     if (loading) {
-      fetch('/animations/Scan.lottie')
+      fetch('/animations/Scan.json')
         .then(res => res.json())
         .then(data => setAnimationData(data))
         .catch(err => console.error('Failed to load Lottie animation:', err));
