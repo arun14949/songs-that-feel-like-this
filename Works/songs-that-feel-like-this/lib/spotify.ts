@@ -60,7 +60,7 @@ export async function searchTrack(title: string, artist: string): Promise<Spotif
         type: 'track',
         limit: 10, // Get more results for better matching
       },
-      timeout: 5000, // 5 second timeout per song search
+      timeout: 2000, // 2 second timeout per song search (reduced to fit Vercel 10s limit)
     });
 
     if (response.data.tracks.items.length > 0) {
@@ -113,7 +113,7 @@ export async function searchTrack(title: string, artist: string): Promise<Spotif
             type: 'track',
             limit: 1,
           },
-          timeout: 5000, // 5 second timeout
+          timeout: 2000, // 2 second timeout (reduced to fit Vercel 10s limit)
         });
         if (response.data.tracks.items.length > 0) {
           const track = response.data.tracks.items[0];

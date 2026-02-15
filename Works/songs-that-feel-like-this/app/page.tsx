@@ -50,7 +50,15 @@ export default function Home() {
       });
 
       if (!spotifyResponse.ok) {
-        const errorData = await spotifyResponse.json();
+        // Handle Vercel 584 timeout error (returns HTML, not JSON)
+        if (spotifyResponse.status === 584) {
+          throw new Error('Request took too long. Please try again with a different image.');
+        }
+
+        // Try to parse JSON error, fallback if not JSON (prevents "Unexpected token" errors)
+        const errorData = await spotifyResponse.json().catch(() => ({
+          error: 'Failed to find songs on Spotify'
+        }));
 
         // If rate limited, show retry-after time
         if (spotifyResponse.status === 429 && errorData.retryAfter) {

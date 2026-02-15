@@ -20,7 +20,8 @@ export async function POST(request: NextRequest) {
     });
 
     // Add maximum timeout for entire search process
-    const MAX_SEARCH_TIME = 15000; // 15 seconds max for all songs
+    // Vercel Hobby plan has 10-second hard limit, so we need to finish in 7s to leave buffer
+    const MAX_SEARCH_TIME = 7000; // 7 seconds max for all songs (leaves 3s buffer for Vercel timeout)
     const searchStartTime = Date.now();
 
     // Search for each song on Spotify SEQUENTIALLY to avoid rate limiting
@@ -37,10 +38,8 @@ export async function POST(request: NextRequest) {
       const track = await searchTrack(song.title, song.artist);
       results.push(track);
 
-      // Minimal delay between songs to respect rate limits (except after last song)
-      if (i < songs.length - 1) {
-        await new Promise(resolve => setTimeout(resolve, 50)); // Reduced from 100ms to 50ms
-      }
+      // No delay needed - Spotify's rate limit is 180 requests/minute (3/second)
+      // Searching 6 songs sequentially without delays = ~1-2 seconds (well under limit)
     }
 
     // Filter out null results (songs not found on Spotify)
