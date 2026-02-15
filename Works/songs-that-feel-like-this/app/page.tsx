@@ -1,27 +1,18 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import ImageUploader from '@/components/ImageUploader';
 import LoadingState from '@/components/LoadingState';
 import PolaroidFrame from '@/components/PolaroidFrame';
-import { useSounds } from '@/hooks/useSounds';
 import type { SpotifyTrack } from '@/lib/types';
 
 export default function Home() {
   const router = useRouter();
-  const { playAmbient, stopAmbient, toggleMute, isMuted } = useSounds();
   const [loading, setLoading] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
-
-  // Cleanup ambient sound on unmount
-  useEffect(() => {
-    return () => {
-      stopAmbient();
-    };
-  }, [stopAmbient]);
 
   const handleImageUpload = async (base64Image: string) => {
     setLoading(true);
@@ -76,10 +67,7 @@ export default function Home() {
 
       const { id } = await saveResponse.json();
 
-      // Step 4: Stop ambient music before redirecting
-      stopAmbient();
-
-      // Step 5: Redirect to results
+      // Step 4: Redirect to results
       router.push(`/recommendations/${id}`);
     } catch (err: any) {
       setError(err.message || 'Something went wrong. Please try again.');
@@ -158,30 +146,7 @@ export default function Home() {
       </div>
 
       {/* Footer */}
-      <footer className="mt-auto pt-16 text-center z-10 space-y-4">
-        {/* Mute Toggle Button */}
-        <button
-          onClick={toggleMute}
-          className="inline-flex items-center gap-2 px-4 py-2 text-sm text-[#757575] hover:text-[#212121] transition-colors"
-          aria-label={isMuted ? 'Unmute ambient sound' : 'Mute ambient sound'}
-        >
-          {isMuted ? (
-            <>
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" clipRule="evenodd" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" />
-              </svg>
-              <span className="font-[family-name:var(--font-sans)] text-xs">Sound Off</span>
-            </>
-          ) : (
-            <>
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
-              </svg>
-              <span className="font-[family-name:var(--font-sans)] text-xs">Sound On</span>
-            </>
-          )}
-        </button>
+      <footer className="mt-auto pt-16 text-center z-10">
         <p className="font-[family-name:var(--font-sans)] text-[12px] text-[#b2b2b2] tracking-wide">
           © Inspired Monster
         </p>

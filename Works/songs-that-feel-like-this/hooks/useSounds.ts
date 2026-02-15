@@ -1,42 +1,15 @@
 'use client';
 
-import { useEffect, useRef, useCallback, useState } from 'react';
+import { useEffect, useRef, useCallback } from 'react';
 
 export function useSounds() {
-  const ambientAudioRef = useRef<HTMLAudioElement | null>(null);
   const clickAudioRef = useRef<HTMLAudioElement | null>(null);
   const backClickAudioRef = useRef<HTMLAudioElement | null>(null);
-  const [isMuted, setIsMuted] = useState(false);
 
   useEffect(() => {
-    // Initialize ambient sound
+    // Initialize click sounds
     if (typeof window !== 'undefined') {
       try {
-        ambientAudioRef.current = new Audio('/sounds/ambient-calm.mp3');
-        ambientAudioRef.current.loop = true;
-        ambientAudioRef.current.volume = 0.1; // Set to 10%
-        ambientAudioRef.current.preload = 'auto';
-
-        // Add error handler for ambient
-        ambientAudioRef.current.addEventListener('error', (e) => {
-          console.error('Error loading ambient sound:', e);
-        });
-
-        // Add loaded handler with mute check
-        ambientAudioRef.current.addEventListener('canplaythrough', () => {
-          console.log('Ambient sound loaded successfully');
-          // Attempt autoplay when loaded (only if not muted)
-          if (!isMuted && ambientAudioRef.current) {
-            ambientAudioRef.current.play()
-              .then(() => {
-                console.log('Ambient sound autoplaying on load');
-              })
-              .catch((err) => {
-                console.log('Ambient autoplay blocked, will try on first user interaction:', err);
-              });
-          }
-        });
-
         clickAudioRef.current = new Audio('/sounds/camera-click.wav');
         clickAudioRef.current.volume = 0.5;
         clickAudioRef.current.preload = 'auto';
@@ -71,10 +44,6 @@ export function useSounds() {
     }
 
     return () => {
-      if (ambientAudioRef.current) {
-        ambientAudioRef.current.pause();
-        ambientAudioRef.current = null;
-      }
       if (clickAudioRef.current) {
         clickAudioRef.current = null;
       }
@@ -82,45 +51,6 @@ export function useSounds() {
         backClickAudioRef.current = null;
       }
     };
-  }, [isMuted]);
-
-  const playAmbient = useCallback(() => {
-    if (ambientAudioRef.current && !isMuted) {
-      console.log('Attempting to play ambient sound...');
-      ambientAudioRef.current.play()
-        .then(() => {
-          console.log('Ambient sound playing successfully');
-        })
-        .catch((err) => {
-          console.error('Ambient sound autoplay blocked or failed:', err);
-        });
-    } else {
-      console.warn('Ambient audio ref is null or muted');
-    }
-  }, [isMuted]);
-
-  const stopAmbient = useCallback(() => {
-    if (ambientAudioRef.current) {
-      console.log('Stopping ambient sound...');
-      ambientAudioRef.current.pause();
-      ambientAudioRef.current.currentTime = 0;
-    }
-  }, []);
-
-  const toggleMute = useCallback(() => {
-    setIsMuted((prev) => {
-      const newMutedState = !prev;
-      if (newMutedState && ambientAudioRef.current) {
-        // Mute - pause the sound
-        ambientAudioRef.current.pause();
-      } else if (!newMutedState && ambientAudioRef.current) {
-        // Unmute - resume the sound
-        ambientAudioRef.current.play().catch((err) => {
-          console.error('Failed to resume ambient sound:', err);
-        });
-      }
-      return newMutedState;
-    });
   }, []);
 
   const playClick = useCallback(() => {
@@ -155,5 +85,5 @@ export function useSounds() {
     }
   }, []);
 
-  return { playAmbient, stopAmbient, playClick, playBackClick, toggleMute, isMuted };
+  return { playClick, playBackClick };
 }
