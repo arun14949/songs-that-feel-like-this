@@ -85,7 +85,7 @@ export default function Home() {
             <br />
             <span className="italic text-[#8b4513]">Feel Like This</span>
           </h1>
-          <p className="font-[family-name:var(--font-sans)] text-xs font-normal text-[#757575] tracking-[2.4px]">
+          <p className="font-[family-name:var(--font-sans)] text-sm font-normal text-[#757575] tracking-[0.025px]">
             Every photo has a soundtrack
           </p>
         </header>

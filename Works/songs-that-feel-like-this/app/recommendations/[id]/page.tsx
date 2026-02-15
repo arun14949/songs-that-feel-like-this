@@ -122,11 +122,11 @@ export default function RecommendationPage({
             <>
               {/* Polaroid Frame with Uploaded Image */}
               {recommendation.imageUrl && (
-                <div className="mb-10 flex flex-col items-center">
+                <div className="mb-10">
                   <PolaroidFrame
                     imageUrl={recommendation.imageUrl}
                     caption={<ShareButton imageUrl={recommendation.imageUrl} />}
-                    className="w-[280px]"
+                    className="w-full"
                     imageAspect="280/201"
                     noRotation={true}
                   />
