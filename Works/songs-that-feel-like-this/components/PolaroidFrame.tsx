@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 
 interface PolaroidFrameProps {
   imageUrl: string;
-  caption?: string;
+  caption?: React.ReactNode;
   className?: string;
   loading?: boolean;
   loadingMessage?: string;
@@ -14,7 +14,7 @@ interface PolaroidFrameProps {
 
 export default function PolaroidFrame({
   imageUrl,
-  caption = '#mood',
+  caption,
   className = '',
   loading = false,
   loadingMessage = '',
@@ -55,14 +55,13 @@ export default function PolaroidFrame({
 
           {/* Lottie Overlay - ONLY inside image area */}
           {loading && animationData && (
-            <div className="absolute inset-0 flex items-center justify-center bg-black/40 z-10">
-              <div className="w-32 h-32">
-                <Lottie
-                  animationData={animationData}
-                  loop={true}
-                  autoplay={true}
-                />
-              </div>
+            <div className="absolute inset-0 bg-black/40 z-10">
+              <Lottie
+                animationData={animationData}
+                loop={true}
+                autoplay={true}
+                className="w-full h-full"
+              />
             </div>
           )}
         </div>
@@ -73,11 +72,11 @@ export default function PolaroidFrame({
             <p className="font-[family-name:var(--font-serif)] text-base text-[#212121] text-center tracking-wide animate-pulse">
               {loadingMessage}
             </p>
-          ) : (
-            <p className="font-[family-name:var(--font-serif)] text-base text-[#212121] text-center tracking-wide">
+          ) : caption ? (
+            <div className="flex justify-center">
               {caption}
-            </p>
-          )}
+            </div>
+          ) : null}
         </div>
 
         {/* Tape accent at top */}

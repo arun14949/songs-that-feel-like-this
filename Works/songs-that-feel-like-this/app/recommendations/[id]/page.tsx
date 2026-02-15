@@ -105,19 +105,15 @@ export default function RecommendationPage({
         <div className="max-w-sm mx-auto z-10">
           {/* Polaroid Frame with Uploaded Image */}
           {recommendation.imageUrl && (
-            <div className="mb-8 flex flex-col items-center">
+            <div className="mb-10 flex flex-col items-center">
               <PolaroidFrame
                 imageUrl={recommendation.imageUrl}
+                caption={<ShareButton />}
                 className="w-[280px]"
                 imageAspect="280/201"
               />
             </div>
           )}
-
-          {/* Share Button */}
-          <div className="mb-10 flex justify-center">
-            <ShareButton />
-          </div>
 
           {/* Section Heading with Decorative Lines */}
           <div className="mb-6 flex items-center gap-3 px-1">

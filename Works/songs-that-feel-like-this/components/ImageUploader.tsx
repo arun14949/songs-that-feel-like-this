@@ -94,7 +94,7 @@ export default function ImageUploader({ onUpload, disabled }: ImageUploaderProps
       <div className="relative w-full">
         <div className="flex items-center justify-center">
           <div
-            className={`w-full transform rotate-2 transition-all ${
+            className={`w-full transition-all ${
               dragActive ? 'scale-105' : ''
             } ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:scale-[1.02]'}`}
             onDragEnter={handleDrag}
@@ -162,11 +162,9 @@ export default function ImageUploader({ onUpload, disabled }: ImageUploaderProps
                 )}
               </div>
 
-              {/* Bottom caption area */}
-              <div className="mt-6 transform -rotate-1">
-                <p className="font-[family-name:var(--font-serif)] text-base text-[#212121] text-center tracking-wide">
-                  Loading States here...
-                </p>
+              {/* Bottom caption area - empty in uploader, only shows in PolaroidFrame during loading */}
+              <div className="mt-6 transform -rotate-1 min-h-[24px]">
+                {/* Empty - caption only shows during actual loading in PolaroidFrame */}
               </div>
 
               {/* Tape accent at top */}

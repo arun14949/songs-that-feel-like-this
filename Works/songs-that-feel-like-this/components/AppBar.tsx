@@ -25,7 +25,7 @@ export default function AppBar({ title, showBack = true }: AppBarProps) {
           )}
 
           {/* Title */}
-          <h1 className="font-[family-name:var(--font-serif)] text-lg text-[#212121] tracking-wide flex-1 truncate">
+          <h1 className="font-[family-name:var(--font-serif)] font-bold text-lg text-[#212121] tracking-wide flex-1 truncate">
             {title}
           </h1>
         </div>
