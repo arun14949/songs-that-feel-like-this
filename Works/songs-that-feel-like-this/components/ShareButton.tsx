@@ -11,6 +11,8 @@ export default function ShareButton({ imageUrl }: ShareButtonProps = {}) {
   const { playClick } = useSounds();
   const [copied, setCopied] = useState(false);
 
+  console.log('ShareButton render - copied state:', copied);
+
   const createPolaroidImage = async (originalImageUrl: string): Promise<Blob> => {
     return new Promise((resolve, reject) => {
       const canvas = document.createElement('canvas');
@@ -75,8 +77,12 @@ export default function ShareButton({ imageUrl }: ShareButtonProps = {}) {
     if (!navigator.share) {
       try {
         await navigator.clipboard.writeText(fullMessage);
+        console.log('Text copied to clipboard successfully');
         setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
+        setTimeout(() => {
+          console.log('Resetting copied state');
+          setCopied(false);
+        }, 2000);
       } catch (err) {
         console.error('Failed to copy to clipboard:', err);
         // Try legacy method
@@ -87,9 +93,14 @@ export default function ShareButton({ imageUrl }: ShareButtonProps = {}) {
         document.body.appendChild(textArea);
         textArea.select();
         try {
-          document.execCommand('copy');
-          setCopied(true);
-          setTimeout(() => setCopied(false), 2000);
+          const success = document.execCommand('copy');
+          console.log('Legacy copy success:', success);
+          if (success) {
+            setCopied(true);
+            setTimeout(() => {
+              setCopied(false);
+            }, 2000);
+          }
         } catch (e) {
           console.error('Legacy copy failed:', e);
         }
