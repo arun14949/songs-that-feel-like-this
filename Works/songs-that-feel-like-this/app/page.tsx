@@ -48,11 +48,12 @@ export default function Home() {
 
       const { tracks }: { tracks: SpotifyTrack[] } = await spotifyResponse.json();
 
-      if (tracks.length === 0) {
+      console.log(`Found ${tracks.length} songs on Spotify out of ${songs.length} recommended`);
+
+      // Require at least 4 songs to show results (instead of requiring all songs)
+      if (tracks.length < 4) {
         throw new Error('Could not find these songs on Spotify. Please try a different image or try again.');
       }
-
-      console.log(`Found ${tracks.length} songs on Spotify out of ${songs.length} recommended`);
 
       // Step 3: Save recommendation
       const saveResponse = await fetch('/api/save', {

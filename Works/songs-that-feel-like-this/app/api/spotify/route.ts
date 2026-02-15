@@ -14,6 +14,10 @@ export async function POST(request: NextRequest) {
     }
 
     const songs: SongSuggestion[] = body.songs;
+    console.log(`Searching Spotify for ${songs.length} songs:`);
+    songs.forEach((song, i) => {
+      console.log(`${i + 1}. "${song.title}" by ${song.artist}`);
+    });
 
     // Search for each song on Spotify
     const searchPromises = songs.map(song =>
@@ -26,6 +30,12 @@ export async function POST(request: NextRequest) {
     const tracks = results.filter(
       (track): track is SpotifyTrack => track !== null
     );
+
+    const notFoundCount = results.length - tracks.length;
+    if (notFoundCount > 0) {
+      console.log(`⚠️  Could not find ${notFoundCount} out of ${songs.length} songs on Spotify`);
+    }
+    console.log(`✅ Found ${tracks.length} songs on Spotify`);
 
     return NextResponse.json({ tracks });
   } catch (error: any) {

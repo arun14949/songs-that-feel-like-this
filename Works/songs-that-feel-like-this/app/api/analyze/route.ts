@@ -35,6 +35,8 @@ Analyze the image thoroughly:
 
 # CORE RECOMMENDATION RULES
 
+**CRITICAL**: Only recommend songs that are AVAILABLE ON SPOTIFY. Use well-known releases from established artists and official soundtracks that are likely to be on Spotify's catalog. Avoid rare, unreleased, or region-specific tracks that might not be on Spotify.
+
 1. **Indian Music Minimum**:
    - Minimum 75% Indian songs (at least 4 out of 5-10 songs)
    - If clearly Indian setting/context: 85% Indian (at least 7-8 out of 10)
