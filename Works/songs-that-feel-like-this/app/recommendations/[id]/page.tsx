@@ -124,17 +124,18 @@ export default function RecommendationPage({
                     caption={<ShareButton imageUrl={recommendation.imageUrl} />}
                     className="w-[280px]"
                     imageAspect="280/201"
+                    noRotation={true}
                   />
                 </div>
               )}
 
               {/* Section Heading with Decorative Lines */}
               <div className="mb-6 flex items-center gap-2 px-1">
-                <div className="flex-1 h-px bg-[#8b4513]" />
+                <img src="/line-3.svg" alt="" className="flex-1" style={{ height: '11.547px' }} />
                 <h2 className="font-[family-name:var(--font-serif)] font-bold text-lg text-[#212121] tracking-wide text-center leading-tight whitespace-pre-wrap px-3">
                   Your Song{'\n'}Recommendations
                 </h2>
-                <div className="flex-1 h-px bg-[#8b4513]" />
+                <img src="/line-4.svg" alt="" className="flex-1" style={{ height: '11.547px' }} />
               </div>
 
               {/* Song Recommendations */}

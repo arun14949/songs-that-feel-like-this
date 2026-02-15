@@ -10,6 +10,7 @@ interface PolaroidFrameProps {
   loading?: boolean;
   loadingMessage?: string;
   imageAspect?: string; // e.g., "280/370" for home, "280/201" for recommendations
+  noRotation?: boolean; // If true, don't rotate the polaroid frame
 }
 
 export default function PolaroidFrame({
@@ -18,7 +19,8 @@ export default function PolaroidFrame({
   className = '',
   loading = false,
   loadingMessage = '',
-  imageAspect = '4/5'
+  imageAspect = '4/5',
+  noRotation = false
 }: PolaroidFrameProps) {
   const [animationData, setAnimationData] = useState(null);
 
@@ -34,7 +36,7 @@ export default function PolaroidFrame({
 
   return (
     <div className={`inline-block ${className}`}>
-      <div className="bg-[#fbfbfb] border border-gray-100 shadow-[0px_10px_16px_0px_rgba(91,84,70,0.2)] p-4 pb-6 transform rotate-2">
+      <div className={`bg-[#fbfbfb] border border-gray-100 shadow-[0px_10px_16px_0px_rgba(91,84,70,0.2)] p-4 pb-6 transform ${noRotation ? '' : 'rotate-2'}`}>
         {/* Image Container with Paper Texture - Lottie overlay stays within this boundary */}
         <div className={`relative w-full overflow-hidden bg-[#212121]`} style={{ aspectRatio: imageAspect }}>
           {/* Base Image */}
