@@ -103,16 +103,17 @@ export default function RecommendationPage({
       {/* Main Content with top padding */}
       <main className="relative min-h-screen pt-20 pb-12 px-6">
         <div className="max-w-sm mx-auto z-10">
-          {/* Polaroid Frame with Uploaded Image and Share Button */}
+          {/* Polaroid Frame with Uploaded Image */}
           {recommendation.imageUrl && (
-            <div className="mb-10">
-              <PolaroidFrame imageUrl={recommendation.imageUrl} className="w-full" />
-              {/* Share Button inside polaroid */}
-              <div className="-mt-8">
-                <ShareButton />
-              </div>
+            <div className="mb-8 flex flex-col items-center">
+              <PolaroidFrame imageUrl={recommendation.imageUrl} className="w-[280px]" />
             </div>
           )}
+
+          {/* Share Button */}
+          <div className="mb-10 flex justify-center">
+            <ShareButton />
+          </div>
 
           {/* Section Heading with Decorative Lines */}
           <div className="mb-6 flex items-center gap-2 px-1">
