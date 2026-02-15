@@ -251,7 +251,22 @@ RESPOND ONLY WITH VALID JSON. NO MARKDOWN, NO ADDITIONAL TEXT.`,
     });
   } catch (error: any) {
     console.error('Error analyzing image:', error);
+    console.error('Error details:', {
+      message: error?.message,
+      status: error?.status,
+      type: error?.type,
+      code: error?.code
+    });
 
+    // Handle OpenAI timeout errors specifically
+    if (error?.code === 'ETIMEDOUT' || error?.message?.includes('timeout')) {
+      return NextResponse.json(
+        { error: 'Image analysis took too long. Please try with a smaller image or try again.' },
+        { status: 504 }
+      );
+    }
+
+    // Handle rate limiting
     if (error?.status === 429) {
       return NextResponse.json(
         { error: 'Too many requests. Please try again later.' },
@@ -259,8 +274,17 @@ RESPOND ONLY WITH VALID JSON. NO MARKDOWN, NO ADDITIONAL TEXT.`,
       );
     }
 
+    // Handle invalid API key
+    if (error?.status === 401 || error?.type === 'invalid_request_error') {
+      return NextResponse.json(
+        { error: 'API configuration error. Please contact support.' },
+        { status: 500 }
+      );
+    }
+
+    // Generic error with helpful message
     return NextResponse.json(
-      { error: 'Failed to analyze image. Please try again.' },
+      { error: error?.message || 'Failed to analyze image. Please try again.' },
       { status: 500 }
     );
   }

@@ -29,10 +29,16 @@ export default function Home() {
       });
 
       if (!analyzeResponse.ok) {
-        throw new Error('Failed to analyze image');
+        const errorData = await analyzeResponse.json().catch(() => ({ error: 'Failed to analyze image' }));
+        throw new Error(errorData.error || 'Failed to analyze image. Please try again.');
       }
 
       const { mood, songs } = await analyzeResponse.json();
+
+      if (!mood || !songs || !Array.isArray(songs)) {
+        throw new Error('Invalid response from server. Please try again.');
+      }
+
       console.log(`AI recommended ${songs.length} songs`);
 
       // Step 2: Enrich with Spotify data (show progress)
