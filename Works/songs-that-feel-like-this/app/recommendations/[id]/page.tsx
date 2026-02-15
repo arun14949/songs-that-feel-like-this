@@ -81,34 +81,40 @@ export default function RecommendationPage({
               <SkeletonLoader />
             </>
           ) : error || !recommendation ? (
-            // Error state
-            <div className="max-w-2xl mx-auto text-center mt-12">
-              <div className="bg-cream-50 border border-gray-200 rounded-xl shadow-lg p-8">
-                <svg
-                  className="w-16 h-16 text-gray-400 mx-auto mb-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+            // Error state - matching Figma design
+            <div className="max-w-sm mx-auto mt-2">
+              <div className="bg-white rounded-3xl p-4 pb-6 flex flex-col items-center gap-0.5">
+                {/* Broken link illustration */}
+                <div className="w-[200px] h-[200px] relative">
+                  <img
+                    src="/broken-link.png"
+                    alt="Broken link"
+                    className="w-full h-full object-cover"
                   />
-                </svg>
-                <h2 className="font-[family-name:var(--font-serif)] text-2xl text-gray-900 mb-2">
-                  {error || 'Recommendation Not Found'}
-                </h2>
-                <p className="font-[family-name:var(--font-sans)] text-gray-600 mb-6">
-                  This recommendation may have been deleted or the link might be invalid.
-                </p>
-                <Link
-                  href="/"
-                  className="inline-flex items-center gap-2 px-6 py-3 bg-brown-600 hover:bg-brown-700 text-white font-[family-name:var(--font-sans)] font-medium rounded-lg transition-colors"
-                >
-                  Create New Recommendation
-                </Link>
+                </div>
+
+                {/* Content */}
+                <div className="flex flex-col gap-6 w-full">
+                  {/* Text content */}
+                  <div className="flex flex-col gap-2 text-center tracking-wide">
+                    <h2 className="font-[family-name:var(--font-serif)] font-bold text-2xl text-[#212121] leading-tight whitespace-pre-wrap">
+                      {'Oops!!\nRecommendation not found.'}
+                    </h2>
+                    <p className="font-[family-name:var(--font-sans)] text-base text-[#757575] leading-[1.4]">
+                      This recommendation may have been deleted or the link might be invalid.
+                    </p>
+                  </div>
+
+                  {/* Button */}
+                  <Link
+                    href="/"
+                    className="bg-[#8b4513] h-14 flex items-center justify-center rounded-full w-full hover:bg-[#6d3610] transition-colors"
+                  >
+                    <span className="font-[family-name:var(--font-sans)] font-bold text-sm text-white tracking-wide">
+                      Create New Recommendation
+                    </span>
+                  </Link>
+                </div>
               </div>
             </div>
           ) : (
