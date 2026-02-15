@@ -36,8 +36,8 @@ Analyze the image thoroughly:
 # CORE RECOMMENDATION RULES
 
 1. **Indian Music Minimum**:
-   - Minimum 75% Indian songs (9 out of 12 minimum)
-   - If clearly Indian setting/context: 85% Indian (10-11 out of 12-15)
+   - Minimum 75% Indian songs (at least 4 out of 5-10 songs)
+   - If clearly Indian setting/context: 85% Indian (at least 7-8 out of 10)
 
 2. **Prioritize These Categories**:
    - **Coke Studio** (Pakistan/India): Prioritize heavily for fusion, indie vibes
@@ -46,7 +46,7 @@ Analyze the image thoroughly:
    - **Film Soundtracks**: Bollywood when mood-appropriate (NOT generic party songs)
    - **Film Scores**: Background scores from Indian cinema
 
-3. **A.R. Rahman Limit**: Maximum 2 tracks unless STRONGLY justified by image context
+3. **A.R. Rahman Limit**: STRICT MAXIMUM of 2 tracks TOTAL. No exceptions. If you include A.R. Rahman, count carefully and ensure you don't exceed 2 songs.
 
 4. **Avoid**: Generic Bollywood party songs, overplayed tracks, predictable choices
 
@@ -92,8 +92,9 @@ Return a JSON object with:
 }
 
 **Requirements**:
-- Return 12-15 songs total
+- Return 5-10 songs total (aim for 8 songs for best experience)
 - Minimum 75% Indian (85% if clearly Indian setting)
+- MAXIMUM 2 A.R. Rahman songs (strictly enforced)
 - Each song MUST have all 5 fields filled
 - Reason should reference image specifics (lighting, mood, setting, etc.)
 - Diverse mix across languages and regions
@@ -105,7 +106,7 @@ RESPOND ONLY WITH VALID JSON. NO MARKDOWN, NO ADDITIONAL TEXT.`,
           content: [
             {
               type: 'text',
-              text: 'Analyze this image and recommend 12-15 songs that match its mood and context. Follow the Indian-music-first approach with cultural intelligence.',
+              text: 'Analyze this image and recommend 5-10 songs (aim for 8) that match its mood and context. Follow the Indian-music-first approach with cultural intelligence. STRICT LIMIT: Maximum 2 A.R. Rahman songs only.',
             },
             {
               type: 'image_url',
@@ -136,6 +137,27 @@ RESPOND ONLY WITH VALID JSON. NO MARKDOWN, NO ADDITIONAL TEXT.`,
 
     if (indianPercentage < 70) {
       console.warn(`Indian music percentage (${indianPercentage}%) below threshold`);
+    }
+
+    // Validate A.R. Rahman limit (maximum 2 songs)
+    const rahmanSongs = result.songs.filter((song: SongSuggestion) =>
+      song.artist && song.artist.toLowerCase().includes('rahman')
+    );
+    if (rahmanSongs.length > 2) {
+      console.warn(`A.R. Rahman songs (${rahmanSongs.length}) exceed maximum of 2. Limiting to first 2.`);
+      // Remove excess Rahman songs
+      const nonRahmanSongs = result.songs.filter((song: SongSuggestion) =>
+        !song.artist || !song.artist.toLowerCase().includes('rahman')
+      );
+      result.songs = [...nonRahmanSongs, ...rahmanSongs.slice(0, 2)];
+    }
+
+    // Ensure song count is between 5-10
+    if (result.songs.length < 5) {
+      console.warn(`Only ${result.songs.length} songs returned, minimum is 5`);
+    } else if (result.songs.length > 10) {
+      console.warn(`${result.songs.length} songs returned, limiting to 10`);
+      result.songs = result.songs.slice(0, 10);
     }
 
     return NextResponse.json({

@@ -74,7 +74,7 @@ export default function ShareButton({ imageUrl }: ShareButtonProps = {}) {
     // Try Web Share API with image if available (mobile)
     if (navigator.share) {
       try {
-        // If image URL is provided, create polaroid version and share it with text
+        // If image URL is provided, create polaroid version and share it
         if (imageUrl && imageUrl.startsWith('data:image/')) {
           try {
             // Create polaroid-styled image
@@ -83,13 +83,30 @@ export default function ShareButton({ imageUrl }: ShareButtonProps = {}) {
 
             // Check if files can be shared
             if (navigator.canShare && navigator.canShare({ files: [file] })) {
-              // Share with both text and file
-              await navigator.share({
-                title: 'Songs That Feel Like This',
-                text: fullMessage,
-                files: [file],
-              });
-              return;
+              // Try sharing with both text and file
+              try {
+                await navigator.share({
+                  title: 'Songs That Feel Like This',
+                  text: fullMessage,
+                  files: [file],
+                });
+                return;
+              } catch (shareErr) {
+                console.log('Could not share both file and text:', shareErr);
+                // Some platforms don't support both - try file only
+                try {
+                  await navigator.share({
+                    files: [file],
+                  });
+                  // If file-only share worked, also copy text to clipboard
+                  await navigator.clipboard.writeText(fullMessage);
+                  setCopied(true);
+                  setTimeout(() => setCopied(false), 2000);
+                  return;
+                } catch (fileErr) {
+                  console.log('Could not share file:', fileErr);
+                }
+              }
             }
           } catch (err) {
             console.log('Could not create polaroid image to share:', err);
@@ -104,6 +121,7 @@ export default function ShareButton({ imageUrl }: ShareButtonProps = {}) {
         });
         return;
       } catch (err) {
+        console.log('Share failed:', err);
         // Fall through to clipboard
       }
     }
