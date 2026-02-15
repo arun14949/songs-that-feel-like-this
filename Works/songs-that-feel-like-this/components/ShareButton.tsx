@@ -71,36 +71,74 @@ export default function ShareButton({ imageUrl }: ShareButtonProps = {}) {
     const shareText = 'Check out these song recommendations based on my image!';
     const fullMessage = `${shareText}\n\n${url}`;
 
-    // Try Web Share API (mobile)
-    if (navigator.share) {
+    // Desktop: No Web Share API, just copy to clipboard
+    if (!navigator.share) {
       try {
-        // STRATEGY: Share text+link as primary content
-        // Note: iOS quick share (contact shortcuts) only supports image OR text, not both
-        // We prioritize text+link because it's more useful (user can click and see all songs)
-        // Image can be shared separately if needed via WhatsApp/Messages apps
-
-        await navigator.share({
-          title: 'Songs That Feel Like This',
-          text: fullMessage,
-        });
-        return;
-      } catch (err: any) {
-        // If user cancelled, don't show error
-        if (err.name === 'AbortError') {
-          return;
+        await navigator.clipboard.writeText(fullMessage);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      } catch (err) {
+        console.error('Failed to copy to clipboard:', err);
+        // Try legacy method
+        const textArea = document.createElement('textarea');
+        textArea.value = fullMessage;
+        textArea.style.position = 'fixed';
+        textArea.style.opacity = '0';
+        document.body.appendChild(textArea);
+        textArea.select();
+        try {
+          document.execCommand('copy');
+          setCopied(true);
+          setTimeout(() => setCopied(false), 2000);
+        } catch (e) {
+          console.error('Legacy copy failed:', e);
         }
-        console.log('Share failed:', err);
-        // Fall through to clipboard
+        document.body.removeChild(textArea);
+      }
+      return;
+    }
+
+    // Mobile: Try to share with image if available (for WhatsApp)
+    // This shows both text-only option (for quick share) and image option (for WhatsApp)
+    if (imageUrl && imageUrl.startsWith('data:image/')) {
+      try {
+        const polaroidBlob = await createPolaroidImage(imageUrl);
+        const file = new File([polaroidBlob], 'memory-polaroid.jpg', { type: 'image/jpeg' });
+
+        // Check if files can be shared
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          // Share with both image and text
+          // iOS will show: Quick share (text-only) + WhatsApp/Messages (can handle both)
+          try {
+            await navigator.share({
+              title: 'Songs That Feel Like This',
+              text: fullMessage,
+              files: [file],
+            });
+            return;
+          } catch (shareErr: any) {
+            if (shareErr.name === 'AbortError') {
+              return; // User cancelled
+            }
+            console.log('Could not share with image, falling back to text-only:', shareErr);
+          }
+        }
+      } catch (err) {
+        console.log('Could not create polaroid image:', err);
       }
     }
 
-    // Fallback to clipboard
+    // Fallback: Text-only share (for mobile without image or when image share fails)
     try {
-      await navigator.clipboard.writeText(fullMessage);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch (err) {
-      console.error('Failed to copy URL:', err);
+      await navigator.share({
+        title: 'Songs That Feel Like This',
+        text: fullMessage,
+      });
+    } catch (err: any) {
+      if (err.name === 'AbortError') {
+        return; // User cancelled
+      }
+      console.log('Share failed:', err);
     }
   };
 
