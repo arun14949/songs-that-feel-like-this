@@ -63,35 +63,79 @@ Analyze the image thoroughly:
 
 **Celebrity/Movie Scene Detection** (HIGHEST PRIORITY):
 - Look VERY CAREFULLY for Indian actors and actresses, especially Malayalam, Tamil, Telugu, Kannada cinema
+- Examine clothing, facial features, movie posters, recognizable scenes, film sets
 - **Malayalam actors**: Mohanlal, Mammootty, Prithviraj, Fahadh Faasil, Nivin Pauly, Dulquer Salmaan, Tovino Thomas
-- **Malayalam actresses**: Kalyani Priyadarshan, Nazriya Nazim, Parvathy Thiruvothu, Manju Warrier, Nayanthara
-- **Tamil actors**: Rajinikanth, Kamal Haasan, Vijay, Ajith, Suriya, Vikram, Dhanush
-- **Bollywood actors**: Shah Rukh Khan, Aamir Khan, Salman Khan, Hrithik Roshan, Ranbir Kapoor, Ranveer Singh
+- **Malayalam actresses**: Kalyani Priyadarshan, Nazriya Nazim, Parvathy Thiruvothu, Manju Warrier, Nayanthara, Aishwarya Lekshmi
+- **Tamil actors**: Rajinikanth, Kamal Haasan, Vijay, Ajith, Suriya, Vikram, Dhanush, Sivakarthikeyan
+- **Bollywood actors**: Shah Rukh Khan, Aamir Khan, Salman Khan, Hrithik Roshan, Ranbir Kapoor, Ranveer Singh, Ayushmann Khurrana
+- **Bollywood actresses**: Deepika Padukone, Alia Bhatt, Priyanka Chopra, Kangana Ranaut, Katrina Kaif
 - If you identify ANY Indian actor/actress or recognize a movie scene:
-  - MUST include 3-4 songs from THEIR iconic movies
-  - For Mohanlal: Devadoothan (Ennennum Kannettante, Aa Raathri Manju Peythu), Iruvar, Vanaprastham, Drishyam, Spadikam
-  - For Kalyani Priyadarshan: Hridayam, Maanaadu, Argentina Fans Kaattoorkadavu, Sesham Mike-il Fathima
-  - For Shah Rukh Khan: DDLJ, Kal Ho Naa Ho, Swades, Chennai Express
+  - MANDATORY: Include 4-5 songs from THEIR iconic movies (50-60% of recommendations)
+  - For Mohanlal: Devadoothan ("Ennennum Kannettante", "Aa Raathri Manju Peythu"), Iruvar, Vanaprastham, Drishyam, Spadikam
+  - For Kalyani Priyadarshan: Hridayam ("Darshana", "Manasse", "Kannil Pettole"), Maanaadu, Argentina Fans Kaattoorkadavu, Sesham Mike-il Fathima
+  - For Shah Rukh Khan: DDLJ ("Tujhe Dekha To"), Kal Ho Naa Ho, Swades ("Yeh Jo Des Hai Tera"), Chennai Express
   - For Rajinikanth: Enthiran, Sivaji, Muthu, Kabali
 - Then fill remaining slots with mood-matching regional tracks
 
+**CELEBRITY IMAGE EXAMPLES (Learn from these):**
+✅ CORRECT for Kalyani Priyadarshan image:
+- "Darshana" - Hesham Abdul Wahab (Hridayam) - Malayalam Film Soundtrack
+- "Manasse" - Hesham Abdul Wahab (Hridayam) - Malayalam Film Soundtrack
+- "Kannil Pettole" - Hesham Abdul Wahab (Hridayam) - Malayalam Film Soundtrack
+- "Oh Manapenne" - Vishal Mishra (Oh Manapenne) - Tamil Film Soundtrack
+
+❌ WRONG for celebrity image (NEVER DO THIS):
+- Generic Bollywood songs not from their movies
+- International tracks when celebrity is clearly identified
+- Songs with no connection to the actor's filmography
+
 **Motorsports/F1/Racing Context** (CRITICAL DETECTION):
-- If you see ANY racing cars, F1 cars, Red Bull Racing, motorsports, racing helmets, or racing tracks:
-  - **PRIORITY**: Include movie soundtracks from racing films:
-    * Rush (2013) - Hans Zimmer score (Lаuda's Theme, Lost But Won, etc.)
-    * Ford v Ferrari / Le Mans '66 (2019) - Marco Beltrami score
+- If you see ANY racing cars, F1 cars, Red Bull Racing, McLaren, Ferrari F1, Mercedes AMG, motorsports, racing helmets, racing tracks, or Formula 1 branding:
+  - **MANDATORY PRIORITY**: Include movie soundtracks from racing films (MINIMUM 60% of all recommendations):
+    * Rush (2013) - Hans Zimmer score: "Lost But Won", "Lauda's Theme", "1976"
+    * Ford v Ferrari / Le Mans '66 (2019) - Marco Beltrami: "Ford v Ferrari", "Le Mans '66"
     * Senna (2010) documentary score
     * Grand Prix (1966) classic score
-  - Include 3-4 racing movie tracks MINIMUM (50% of recommendations)
-  - Add 2-3 high-energy Indian tracks: Bloodywood, Coke Studio bangers, indie rock
-  - Adrenaline, speed, intensity should be the mood
-  - DO NOT recommend calm/romantic Indian indie for racing images
+  - Include 5-6 racing movie tracks MINIMUM (60% of total 8-10 songs)
+  - Add 2-3 high-energy Indian tracks ONLY: Bloodywood, Coke Studio rock/fusion, DIVINE, indie rock
+  - Adrenaline, speed, intensity, triumph should be the dominant mood
+  - STRICTLY FORBIDDEN: Calm/romantic/slow Indian indie, Prateek Kuhad, Bollywood romantic songs
 
-**Weather-Based**:
-- **Rain**: Romantic Malayalam/Tamil tracks (Sushin Shyam, Hesham Abdul Wahab), Bollywood monsoon classics
-- **Sea/Beach/Coastal**: Breezy Malayalam indie, Tamil coastal vibes, Goan chill
-- **Snow/Mountains**: Himachali folk, Kashmir references, ethereal indie
-- **Night City**: Moody Indian indie, urban loneliness tracks (Prateek Kuhad, Lifafa)
+**RACING IMAGE EXAMPLES (Learn from these):**
+✅ CORRECT for F1 image:
+- "Lost But Won" - Hans Zimmer (Rush) - Film Score - "Captures F1 adrenaline and triumph"
+- "Ford v Ferrari Theme" - Marco Beltrami - Film Score - "Embodies racing intensity"
+- "1976" - Hans Zimmer (Rush) - Film Score - "Epic racing championship energy"
+- "Lauda's Theme" - Hans Zimmer (Rush) - Film Score - "F1 legend's determination"
+- "Machayenge" - Emiway Bantai - Indian Hip-Hop - "High-octane energy matching racing"
+
+❌ WRONG for F1 image (NEVER DO THIS):
+- "Jashn-E-Bahaaraa" (romantic Bollywood - completely wrong mood)
+- "Zinda" (motivational but not racing-appropriate)
+- Multiple Prateek Kuhad tracks (too calm for racing context)
+
+**Weather-Based** (HIGH PRIORITY - detect weather carefully):
+- **Rain/Monsoon**: MANDATORY romantic Malayalam/Tamil rain tracks:
+  * Sushin Shyam rain songs: "Neeyen", "Pranayamaay"
+  * Hesham Abdul Wahab: "Darshana", "Manasse"
+  * Bollywood monsoon: "Baarish" (Ash King), "Tum Se Hi" (Mohit Chauhan)
+  * Coke Studio rain vibes
+  * Minimum 50% rain-themed tracks if rain is visible
+- **Sea/Beach/Coastal**: Breezy Malayalam indie, Tamil coastal vibes, Goan chill, When Chai Met Toast
+- **Snow/Mountains**: Himachali folk, Kashmir references, ethereal indie, AR Rahman mountain tracks
+- **Night City**: Moody Indian indie, urban loneliness tracks (Lifafa, Ritviz, limited Prateek Kuhad)
+
+**RAIN IMAGE EXAMPLES (Learn from these):**
+✅ CORRECT for rain image:
+- "Neeyen" - Sushin Shyam - Malayalam Film Soundtrack - "Captures monsoon romance perfectly"
+- "Baarish" - Ash King - Hindi Film Soundtrack - "Classic rain love song"
+- "Darshana" - Hesham Abdul Wahab - Malayalam Film Soundtrack - "Melancholic rain mood"
+- "Tum Se Hi" - Mohit Chauhan - Hindi Film Soundtrack - "Monsoon nostalgia"
+
+❌ WRONG for rain image (NEVER DO THIS):
+- High-energy racing tracks
+- Party Bollywood songs
+- Songs with no rain/romantic/melancholic connection
 
 **Regional Intelligence**:
 - **Kerala vibes**: Prioritize Malayalam cinema (Sushin Shyam, Bijibal, Rex Vijayan), When Chai Met Toast
@@ -131,7 +175,7 @@ RESPOND ONLY WITH VALID JSON. NO MARKDOWN, NO ADDITIONAL TEXT.`,
           content: [
             {
               type: 'text',
-              text: 'Analyze this image and recommend 5-10 songs (aim for 8) that match its mood and context. Follow the Indian-music-first approach with cultural intelligence. STRICT LIMITS: Maximum 2 A.R. Rahman songs, Maximum 1 Prateek Kuhad song. CRITICAL: If you see F1/racing cars, prioritize Rush and Ford v Ferrari soundtracks (50% racing movie tracks). IMPORTANT: If you see any Indian actor/actress (Mohanlal, Kalyani Priyadarshan, etc.) or recognize a movie scene, you MUST include 3-4 songs from their movies.',
+              text: 'Analyze this image and recommend 5-10 songs (aim for 8) that match its mood and context. Follow the Indian-music-first approach with cultural intelligence. STRICT LIMITS: Maximum 2 A.R. Rahman songs, Maximum 1 Prateek Kuhad song. CRITICAL CONTEXT DETECTION: (1) F1/Racing cars: MINIMUM 60% Rush and Ford v Ferrari soundtracks, (2) Rain/Monsoon: MINIMUM 50% rain-themed romantic tracks (Sushin Shyam, Hesham Abdul Wahab), (3) Indian celebrity: MINIMUM 50% songs from THEIR movies. Study the examples in the system prompt carefully.',
             },
             {
               type: 'image_url',
