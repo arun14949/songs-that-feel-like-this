@@ -1,18 +1,36 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import ImageUploader from '@/components/ImageUploader';
 import LoadingState from '@/components/LoadingState';
 import PolaroidFrame from '@/components/PolaroidFrame';
+import { useSounds } from '@/hooks/useSounds';
 import type { SpotifyTrack } from '@/lib/types';
 
 export default function Home() {
   const router = useRouter();
+  const { playAmbient, stopAmbient } = useSounds();
   const [loading, setLoading] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
+
+  // Play ambient sound on mount (user interaction will trigger it)
+  useEffect(() => {
+    // Add a click listener to start ambient sound on first interaction
+    const handleFirstInteraction = () => {
+      playAmbient();
+      document.removeEventListener('click', handleFirstInteraction);
+    };
+
+    document.addEventListener('click', handleFirstInteraction);
+
+    return () => {
+      document.removeEventListener('click', handleFirstInteraction);
+      stopAmbient();
+    };
+  }, [playAmbient, stopAmbient]);
 
   const handleImageUpload = async (base64Image: string) => {
     setLoading(true);
@@ -32,23 +50,9 @@ export default function Home() {
         throw new Error('Failed to analyze image');
       }
 
-      const { mood } = await analyzeResponse.json();
+      const { mood, songs } = await analyzeResponse.json();
 
-      // Step 2: Get song recommendations
-      setLoadingMessage('Finding the perfect songs...');
-      const recommendResponse = await fetch('/api/recommend', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ mood }),
-      });
-
-      if (!recommendResponse.ok) {
-        throw new Error('Failed to get recommendations');
-      }
-
-      const { songs } = await recommendResponse.json();
-
-      // Step 3: Enrich with Spotify data
+      // Step 2: Enrich with Spotify data
       setLoadingMessage('Getting Spotify data...');
       const spotifyResponse = await fetch('/api/spotify', {
         method: 'POST',
@@ -66,7 +70,7 @@ export default function Home() {
         throw new Error('No songs found on Spotify');
       }
 
-      // Step 4: Save recommendation
+      // Step 3: Save recommendation
       const saveResponse = await fetch('/api/save', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -79,7 +83,7 @@ export default function Home() {
 
       const { id } = await saveResponse.json();
 
-      // Step 5: Redirect to results
+      // Step 4: Redirect to results
       router.push(`/recommendations/${id}`);
     } catch (err: any) {
       setError(err.message || 'Something went wrong. Please try again.');

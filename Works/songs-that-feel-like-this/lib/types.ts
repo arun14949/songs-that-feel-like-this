@@ -6,6 +6,9 @@ export interface MoodAnalysis {
 export interface SongSuggestion {
   title: string;
   artist: string;
+  language?: string;
+  category?: string;
+  reason?: string;
 }
 
 export interface SpotifyTrack {

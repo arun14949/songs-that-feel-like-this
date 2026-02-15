@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef } from 'react';
+import { useSounds } from '@/hooks/useSounds';
 
 interface ImageUploaderProps {
   onUpload: (base64: string) => void;
@@ -8,6 +9,7 @@ interface ImageUploaderProps {
 }
 
 export default function ImageUploader({ onUpload, disabled }: ImageUploaderProps) {
+  const { playClick } = useSounds();
   const [preview, setPreview] = useState<string | null>(null);
   const [dragActive, setDragActive] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -85,6 +87,7 @@ export default function ImageUploader({ onUpload, disabled }: ImageUploaderProps
 
   const handleClick = () => {
     if (disabled) return;
+    playClick();
     fileInputRef.current?.click();
   };
 

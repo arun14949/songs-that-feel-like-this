@@ -16,7 +16,6 @@ export default function RecommendationPage({
 }) {
   const router = useRouter();
   const [recommendation, setRecommendation] = useState<Recommendation | null>(null);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [id, setId] = useState<string>('');
 
@@ -33,7 +32,6 @@ export default function RecommendationPage({
 
       if (response.status === 404) {
         setError('Recommendation not found');
-        setLoading(false);
         return;
       }
 
@@ -45,14 +43,8 @@ export default function RecommendationPage({
       setRecommendation(data.recommendation);
     } catch (err: any) {
       setError(err.message || 'Failed to load recommendation');
-    } finally {
-      setLoading(false);
     }
   };
-
-  if (loading) {
-    return null;
-  }
 
   if (error || !recommendation) {
     return (

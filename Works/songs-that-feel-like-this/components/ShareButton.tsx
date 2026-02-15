@@ -1,12 +1,14 @@
 'use client';
 
 import { useState } from 'react';
+import { useSounds } from '@/hooks/useSounds';
 
 interface ShareButtonProps {
   imageUrl?: string;
 }
 
 export default function ShareButton({ imageUrl }: ShareButtonProps = {}) {
+  const { playClick } = useSounds();
   const [copied, setCopied] = useState(false);
 
   const createPolaroidImage = async (originalImageUrl: string): Promise<Blob> => {
@@ -64,6 +66,7 @@ export default function ShareButton({ imageUrl }: ShareButtonProps = {}) {
   };
 
   const handleShare = async () => {
+    playClick();
     const url = window.location.href;
     const shareText = 'Check out these song recommendations based on my image!';
     const fullMessage = `${shareText}\n\n${url}`;

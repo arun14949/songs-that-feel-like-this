@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { openai } from '@/lib/openai';
+import type { SongSuggestion } from '@/lib/types';
 
 export async function POST(request: NextRequest) {
   try {
@@ -22,36 +23,89 @@ export async function POST(request: NextRequest) {
       messages: [
         {
           role: 'system',
-          content: 'You are an expert visual analyst who describes images with vivid, specific detail. You capture not just the mood, but the exact visual qualities, colors, lighting, time of day, weather, setting, and emotional nuances that make each image unique. You NEVER use generic descriptions - every image gets a distinct, detailed analysis.',
+          content: `You are an expert music curator specializing in Indian music with deep cultural intelligence. You recommend songs that match image moods with exceptional regional awareness and contextual sensitivity.
+
+# STEP 1: IMAGE UNDERSTANDING
+
+Analyze the image thoroughly:
+- **Emotional Tone**: What mood does it convey? (nostalgia, joy, melancholy, energy, romance, mystery, etc.)
+- **Environmental Cues**: Location type (beach, city, mountains, rain, night, etc.), weather, lighting, time of day
+- **Entity Recognition**: Identify any visible celebrities, movie scenes, recognizable landmarks, vehicles (especially F1/racing cars), regional markers
+- **Cultural Context**: Is this clearly an Indian setting? (Kerala backwaters, Chennai streets, Mumbai skyline, etc.) Or Western/International?
+
+# CORE RECOMMENDATION RULES
+
+1. **Indian Music Minimum**:
+   - Minimum 75% Indian songs (9 out of 12 minimum)
+   - If clearly Indian setting/context: 85% Indian (10-11 out of 12-15)
+
+2. **Prioritize These Categories**:
+   - **Coke Studio** (Pakistan/India): Prioritize heavily for fusion, indie vibes
+   - **Indian Indie**: When Chai Met Toast, Prateek Kuhad, Lifafa, Ankur Tewari, Parvaaz, etc.
+   - **Regional Cinema OSTs**: Malayalam (Sushin Shyam, Bijibal), Tamil (Santhosh Narayanan, Anirudh), Telugu, Kannada films
+   - **Film Soundtracks**: Bollywood when mood-appropriate (NOT generic party songs)
+   - **Film Scores**: Background scores from Indian cinema
+
+3. **A.R. Rahman Limit**: Maximum 2 tracks unless STRONGLY justified by image context
+
+4. **Avoid**: Generic Bollywood party songs, overplayed tracks, predictable choices
+
+# SPECIAL CONTEXT RULES
+
+**Celebrity/Movie Scene Detection**:
+- If image shows Bollywood/regional cinema actor or movie scene:
+  - Recommend songs from THEIR movies first (2-3 tracks)
+  - Then add mood-matching regional tracks
+
+**Motorsports/F1 Context**:
+- If F1 car, racing, motorsports visible:
+  - Include racing cinema scores: Rush (Hans Zimmer), Ford v Ferrari (Marco Beltrami)
+  - Add high-energy Indian tracks: Coke Studio bangers, Bloodywood, indie rock
+
+**Weather-Based**:
+- **Rain**: Romantic Malayalam/Tamil tracks (Sushin Shyam, Hesham Abdul Wahab), Bollywood monsoon classics
+- **Sea/Beach/Coastal**: Breezy Malayalam indie, Tamil coastal vibes, Goan chill
+- **Snow/Mountains**: Himachali folk, Kashmir references, ethereal indie
+- **Night City**: Moody Indian indie, urban loneliness tracks (Prateek Kuhad, Lifafa)
+
+**Regional Intelligence**:
+- **Kerala vibes**: Prioritize Malayalam cinema (Sushin Shyam, Bijibal, Rex Vijayan), When Chai Met Toast
+- **Tamil Nadu**: Santhosh Narayanan, Anirudh Ravichander, indie Tamil
+- **Karnataka**: Kannada indie, Raghu Dixit
+- **Northeast**: Menwhopause, Taba Chake
+- **Mumbai/Urban**: Hindi indie, underground hip-hop
+
+# OUTPUT FORMAT
+
+Return a JSON object with:
+{
+  "mood": "Brief 2-3 sentence description of image analysis",
+  "songs": [
+    {
+      "title": "Song Name",
+      "artist": "Artist Name",
+      "language": "Malayalam/Tamil/Hindi/English/Punjabi/etc",
+      "category": "Coke Studio / Indian Indie / Regional OST / Film Soundtrack / International / Film Score",
+      "reason": "One sentence explaining why this matches the image mood/context"
+    }
+  ]
+}
+
+**Requirements**:
+- Return 12-15 songs total
+- Minimum 75% Indian (85% if clearly Indian setting)
+- Each song MUST have all 5 fields filled
+- Reason should reference image specifics (lighting, mood, setting, etc.)
+- Diverse mix across languages and regions
+
+RESPOND ONLY WITH VALID JSON. NO MARKDOWN, NO ADDITIONAL TEXT.`,
         },
         {
           role: 'user',
           content: [
             {
               type: 'text',
-              text: `Analyze this image with SPECIFIC DETAIL. Be descriptive and unique - avoid generic terms like "peaceful" or "calm" alone.
-
-VISUAL ANALYSIS (be very specific):
-1. **Colors & Palette**: What are the dominant colors? Are they warm (oranges, reds, yellows) or cool (blues, greens, purples)? Saturated or muted? Describe the exact color palette.
-
-2. **Lighting & Time**: What's the lighting like? (Golden hour sunset, harsh midday, soft overcast, blue hour twilight, artificial neon, candlelight, etc.) What time of day does it feel like?
-
-3. **Setting & Environment**: Where is this? (Urban street, forest path, beach, mountains, indoor café, bedroom, city skyline, countryside, desert, etc.) Be specific about the location type.
-
-4. **Weather & Atmosphere**: Is there rain, fog, mist, clear skies, clouds, snow, sun rays? How does weather affect the mood?
-
-5. **Composition & Focus**: What's the main subject? Is it centered, off to the side? Is there depth, layers, leading lines? Close-up or wide shot?
-
-6. **Energy & Movement**: Does it feel still/static or dynamic/moving? Fast-paced or slow and contemplative?
-
-7. **Emotional Tone**: What SPECIFIC emotion does it evoke? (not just "calm" but "wistful solitude", not just "happy" but "carefree euphoria", etc.)
-   - Examples: nostalgic longing, quiet melancholy, vibrant energy, eerie mystery, warm comfort, urban loneliness, natural wonder, dreamy escapism, gritty realism, romantic intimacy
-
-8. **Temporal Feel**: Does it feel vintage (film grain, retro colors), modern (sharp digital, contemporary), or timeless?
-
-9. **Texture & Quality**: Soft/dreamy, sharp/crisp, grainy, smooth, rough, ethereal?
-
-Provide a 3-4 sentence description that captures these SPECIFIC details. Make it vivid and unique so that no two images would get the same description. Focus on what makes THIS image different from all others.`,
+              text: 'Analyze this image and recommend 12-15 songs that match its mood and context. Follow the Indian-music-first approach with cultural intelligence.',
             },
             {
               type: 'image_url',
@@ -62,14 +116,32 @@ Provide a 3-4 sentence description that captures these SPECIFIC details. Make it
           ],
         },
       ],
-      max_tokens: 400,
+      max_tokens: 2000,
+      response_format: { type: 'json_object' },
     });
 
-    const mood = response.choices[0]?.message?.content || '';
+    const content = response.choices[0]?.message?.content || '{}';
+    const result = JSON.parse(content);
+
+    // Validate response structure
+    if (!result.mood || !result.songs || !Array.isArray(result.songs)) {
+      throw new Error('Invalid response format from AI');
+    }
+
+    // Validate Indian music percentage
+    const indianSongs = result.songs.filter((song: SongSuggestion) =>
+      song.category && !song.category.includes('International')
+    );
+    const indianPercentage = (indianSongs.length / result.songs.length) * 100;
+
+    if (indianPercentage < 70) {
+      console.warn(`Indian music percentage (${indianPercentage}%) below threshold`);
+    }
 
     return NextResponse.json({
-      mood,
-      description: mood,
+      mood: result.mood,
+      description: result.mood,
+      songs: result.songs,
     });
   } catch (error: any) {
     console.error('Error analyzing image:', error);
