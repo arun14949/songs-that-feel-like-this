@@ -39,16 +39,22 @@ Analyze the image thoroughly:
    - Minimum 75% Indian songs (at least 4 out of 5-10 songs)
    - If clearly Indian setting/context: 85% Indian (at least 7-8 out of 10)
 
-2. **Prioritize These Categories**:
+2. **Prioritize These Categories** (IN THIS ORDER):
+   - **Indian Indie** (HIGHEST PRIORITY): When Chai Met Toast, Prateek Kuhad, Lifafa, Ankur Tewari, Parvaaz, The Local Train, Ritviz, Anuv Jain, etc.
    - **Coke Studio** (Pakistan/India): Prioritize heavily for fusion, indie vibes
-   - **Indian Indie**: When Chai Met Toast, Prateek Kuhad, Lifafa, Ankur Tewari, Parvaaz, etc.
    - **Regional Cinema OSTs**: Malayalam (Sushin Shyam, Bijibal), Tamil (Santhosh Narayanan, Anirudh), Telugu, Kannada films
    - **Film Soundtracks**: Bollywood when mood-appropriate (NOT generic party songs)
    - **Film Scores**: Background scores from Indian cinema
 
-3. **A.R. Rahman Limit**: STRICT MAXIMUM of 2 tracks TOTAL. No exceptions. If you include A.R. Rahman, count carefully and ensure you don't exceed 2 songs.
+3. **Category Balance** (aim for this distribution in 8 songs):
+   - 3-4 Indian Indie tracks (40-50%)
+   - 2-3 Coke Studio / Regional OST (25-40%)
+   - 1-2 Film Soundtracks/Scores (10-25%)
+   - 0-1 International (0-15%)
 
-4. **Avoid**: Generic Bollywood party songs, overplayed tracks, predictable choices
+4. **A.R. Rahman Limit**: STRICT MAXIMUM of 2 tracks TOTAL. No exceptions. If you include A.R. Rahman, count carefully and ensure you don't exceed 2 songs.
+
+5. **Avoid**: Generic Bollywood party songs, overplayed tracks, predictable choices, over-reliance on film music
 
 # SPECIAL CONTEXT RULES
 

@@ -1,10 +1,11 @@
 'use client';
 
-import { useEffect, useRef, useCallback } from 'react';
+import { useEffect, useRef, useCallback, useState } from 'react';
 
 export function useSounds() {
   const ambientAudioRef = useRef<HTMLAudioElement | null>(null);
   const clickAudioRef = useRef<HTMLAudioElement | null>(null);
+  const [isMuted, setIsMuted] = useState(false);
 
   useEffect(() => {
     // Initialize ambient sound
@@ -12,7 +13,7 @@ export function useSounds() {
       try {
         ambientAudioRef.current = new Audio('/sounds/ambient-calm.mp3');
         ambientAudioRef.current.loop = true;
-        ambientAudioRef.current.volume = 0.3;
+        ambientAudioRef.current.volume = 0.4;
         ambientAudioRef.current.preload = 'auto';
 
         // Add error handler for ambient
@@ -23,9 +24,17 @@ export function useSounds() {
         // Add loaded handler
         ambientAudioRef.current.addEventListener('canplaythrough', () => {
           console.log('Ambient sound loaded successfully');
+          // Attempt autoplay when loaded
+          ambientAudioRef.current?.play()
+            .then(() => {
+              console.log('Ambient sound autoplaying on load');
+            })
+            .catch((err) => {
+              console.log('Ambient autoplay blocked, will try on first user interaction:', err);
+            });
         });
 
-        clickAudioRef.current = new Audio('/sounds/wooden-click.mp3');
+        clickAudioRef.current = new Audio('/sounds/camera-click.wav');
         clickAudioRef.current.volume = 0.5;
         clickAudioRef.current.preload = 'auto';
 
@@ -55,7 +64,7 @@ export function useSounds() {
   }, []);
 
   const playAmbient = useCallback(() => {
-    if (ambientAudioRef.current) {
+    if (ambientAudioRef.current && !isMuted) {
       console.log('Attempting to play ambient sound...');
       ambientAudioRef.current.play()
         .then(() => {
@@ -65,9 +74,9 @@ export function useSounds() {
           console.error('Ambient sound autoplay blocked or failed:', err);
         });
     } else {
-      console.warn('Ambient audio ref is null');
+      console.warn('Ambient audio ref is null or muted');
     }
-  }, []);
+  }, [isMuted]);
 
   const stopAmbient = useCallback(() => {
     if (ambientAudioRef.current) {
@@ -75,6 +84,22 @@ export function useSounds() {
       ambientAudioRef.current.pause();
       ambientAudioRef.current.currentTime = 0;
     }
+  }, []);
+
+  const toggleMute = useCallback(() => {
+    setIsMuted((prev) => {
+      const newMutedState = !prev;
+      if (newMutedState && ambientAudioRef.current) {
+        // Mute - pause the sound
+        ambientAudioRef.current.pause();
+      } else if (!newMutedState && ambientAudioRef.current) {
+        // Unmute - resume the sound
+        ambientAudioRef.current.play().catch((err) => {
+          console.error('Failed to resume ambient sound:', err);
+        });
+      }
+      return newMutedState;
+    });
   }, []);
 
   const playClick = useCallback(() => {
@@ -93,5 +118,5 @@ export function useSounds() {
     }
   }, []);
 
-  return { playAmbient, stopAmbient, playClick };
+  return { playAmbient, stopAmbient, playClick, toggleMute, isMuted };
 }
