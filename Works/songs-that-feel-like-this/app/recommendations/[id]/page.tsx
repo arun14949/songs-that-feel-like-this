@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import SongRecommendations from '@/components/SongRecommendations';
 import ShareButton from '@/components/ShareButton';
-import LoadingState from '@/components/LoadingState';
 import PolaroidFrame from '@/components/PolaroidFrame';
 import AppBar from '@/components/AppBar';
 import type { Recommendation } from '@/lib/types';
@@ -52,11 +51,7 @@ export default function RecommendationPage({
   };
 
   if (loading) {
-    return (
-      <main className="relative min-h-screen py-12 px-4">
-        <LoadingState message="Loading your recommendations..." />
-      </main>
-    );
+    return null;
   }
 
   if (error || !recommendation) {
@@ -108,7 +103,7 @@ export default function RecommendationPage({
             <div className="mb-10 flex flex-col items-center">
               <PolaroidFrame
                 imageUrl={recommendation.imageUrl}
-                caption={<ShareButton />}
+                caption={<ShareButton imageUrl={recommendation.imageUrl} />}
                 className="w-[280px]"
                 imageAspect="280/201"
               />
@@ -116,12 +111,16 @@ export default function RecommendationPage({
           )}
 
           {/* Section Heading with Decorative Lines */}
-          <div className="mb-6 flex items-center gap-3 px-1">
-            <div className="h-px bg-[#8b4513] flex-1" />
-            <h2 className="font-[family-name:var(--font-serif)] font-bold text-base text-[#212121] tracking-wide text-center leading-snug whitespace-nowrap">
-              Your Song<br />Recommendations
+          <div className="mb-6 flex items-center gap-2 px-1">
+            <div className="flex-1 relative h-0">
+              <img src="/line-3.svg" alt="" className="absolute inset-y-[-6px] left-0 right-0 w-full" />
+            </div>
+            <h2 className="font-[family-name:var(--font-serif)] font-bold text-lg text-[#212121] tracking-wide text-center leading-tight whitespace-pre-wrap">
+              Your Song{'\n'}Recommendations
             </h2>
-            <div className="h-px bg-[#8b4513] flex-1" />
+            <div className="flex-1 relative h-0">
+              <img src="/line-4.svg" alt="" className="absolute inset-y-[-6px] left-0 right-0 w-full" />
+            </div>
           </div>
 
           {/* Song Recommendations */}

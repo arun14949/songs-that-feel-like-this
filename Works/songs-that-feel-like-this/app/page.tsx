@@ -92,12 +92,12 @@ export default function Home() {
       <div className="w-full max-w-md mx-auto flex flex-col items-center z-10">
         {/* Header */}
         <header className="text-center mb-8 space-y-3">
-          <h1 className="font-[family-name:var(--font-serif)] font-bold text-[40px] md:text-5xl text-[#212121] leading-tight shadow-[0px_1px_1px_0px_rgba(0,0,0,0.05)]">
+          <h1 className="font-[family-name:var(--font-serif)] font-bold text-[40px] md:text-5xl text-[#212121] leading-tight">
             Songs That
             <br />
             <span className="italic text-[#8b4513]">Feel Like This</span>
           </h1>
-          <p className="font-[family-name:var(--font-sans)] text-xs font-normal text-[#757575] tracking-[2.4px] uppercase">
+          <p className="font-[family-name:var(--font-sans)] text-xs font-normal text-[#757575] tracking-[2.4px]">
             Every photo has a soundtrack
           </p>
         </header>

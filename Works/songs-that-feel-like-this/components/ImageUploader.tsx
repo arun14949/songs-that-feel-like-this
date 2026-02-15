@@ -139,7 +139,7 @@ export default function ImageUploader({ onUpload, disabled }: ImageUploaderProps
                       <img src="/camera-icon.svg" alt="" className="w-12 h-12 mb-4 opacity-90" />
 
                       {/* Upload text */}
-                      <div className="transform -rotate-2 mb-2">
+                      <div className="mb-2">
                         <p className="font-[family-name:var(--font-serif)] text-lg text-[#fbfbfb]">
                           Upload a memory
                         </p>

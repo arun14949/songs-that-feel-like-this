@@ -2,20 +2,45 @@
 
 import { useState } from 'react';
 
-export default function ShareButton() {
+interface ShareButtonProps {
+  imageUrl?: string;
+}
+
+export default function ShareButton({ imageUrl }: ShareButtonProps = {}) {
   const [copied, setCopied] = useState(false);
 
   const handleShare = async () => {
     const url = window.location.href;
+    const text = 'Check out these song recommendations based on my image!';
 
-    // Try Web Share API first (mobile)
+    // Try Web Share API with image if available (mobile)
     if (navigator.share) {
       try {
-        await navigator.share({
+        const shareData: ShareData = {
           title: 'Songs That Feel Like This',
-          text: 'Check out these song recommendations based on my image!',
-          url: url,
-        });
+          text,
+          url,
+        };
+
+        // If image URL is provided and it's a data URL, try to share it
+        if (imageUrl && imageUrl.startsWith('data:image/')) {
+          try {
+            // Convert base64 to blob
+            const response = await fetch(imageUrl);
+            const blob = await response.blob();
+            const file = new File([blob], 'memory.jpg', { type: 'image/jpeg' });
+
+            // Check if files can be shared
+            if (navigator.canShare && navigator.canShare({ files: [file] })) {
+              shareData.files = [file];
+            }
+          } catch (err) {
+            console.log('Could not add image to share:', err);
+            // Continue without image
+          }
+        }
+
+        await navigator.share(shareData);
         return;
       } catch (err) {
         // Fall through to clipboard
