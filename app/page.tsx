@@ -213,7 +213,7 @@ export default function Home() {
       {/* Footer */}
       <footer className="mt-auto pt-16 text-center z-10">
         <p className="font-[family-name:var(--font-sans)] text-[12px] text-[#b2b2b2] tracking-wide">
-          © Inspired Monster · Version 1.0.4
+          © Inspired Monster · Version 1.0.5
         </p>
       </footer>
     </main>
