@@ -10,14 +10,9 @@ const systemPrompt = fs.readFileSync(
   'utf-8'
 );
 
-// Configure body size limit for App Router (10MB to support high-quality images)
-export const config = {
-  api: {
-    bodyParser: {
-      sizeLimit: '10mb',
-    },
-  },
-};
+// Configure route for longer execution and dynamic rendering
+export const maxDuration = 60; // Allow up to 60 seconds for OpenAI API calls
+export const dynamic = 'force-dynamic'; // Always run dynamically, never cache
 
 export async function POST(request: NextRequest) {
   try {

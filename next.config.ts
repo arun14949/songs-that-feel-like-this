@@ -10,6 +10,13 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  experimental: {
+    // Increase body size limit for API routes to support base64-encoded images
+    // A 10MB image becomes ~13MB after base64 encoding
+    serverActions: {
+      bodySizeLimit: '15mb',
+    },
+  },
 };
 
 export default nextConfig;
