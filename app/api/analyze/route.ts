@@ -30,6 +30,13 @@ export async function POST(request: NextRequest) {
       ? body.image.split('base64,')[1]
       : body.image;
 
+    // Log image size for debugging
+    const imageSizeKB = (imageData.length * 0.75) / 1024;
+    console.log(`[Analyze API] Received image: ${imageSizeKB.toFixed(0)}KB`);
+
+    console.log('[Analyze API] Calling OpenAI API...');
+    const startTime = Date.now();
+
     const response = await openai.chat.completions.create({
       model: 'gpt-4o',
       messages: [
@@ -56,6 +63,9 @@ export async function POST(request: NextRequest) {
       max_tokens: 2000,
       response_format: { type: 'json_object' },
     });
+
+    const duration = Date.now() - startTime;
+    console.log(`[Analyze API] OpenAI responded in ${(duration / 1000).toFixed(1)}s`);
 
     const content = response.choices[0]?.message?.content || '{}';
     const result = JSON.parse(content);

@@ -24,6 +24,10 @@ export default function Home() {
     const timeoutId = setTimeout(() => controller.abort(), 60000);
 
     try {
+      // Log image size for debugging
+      const imageSizeMB = (base64Image.length * 0.75) / (1024 * 1024);
+      console.log(`Uploading image: ${imageSizeMB.toFixed(2)}MB`);
+
       // Step 1: Analyze image (more descriptive messages)
       setLoadingMessage('Understanding your image...');
       const analyzeResponse = await fetch('/api/analyze', {
@@ -37,6 +41,7 @@ export default function Home() {
 
       if (!analyzeResponse.ok) {
         const errorData = await analyzeResponse.json().catch(() => ({ error: 'Failed to analyze image' }));
+        console.error('Analyze API error:', errorData, 'Status:', analyzeResponse.status);
         throw new Error(errorData.error || 'Failed to analyze image. Please try again.');
       }
 
