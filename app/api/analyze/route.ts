@@ -47,7 +47,7 @@ export async function POST(request: NextRequest) {
           content: [
             {
               type: 'text',
-              text: 'Analyze this image and recommend 8-10 songs that match its mood and context. Follow the comprehensive v2.0 recommendation rules including: (1) Texture matching (grain of photo → grain of production), (2) Blacklist compliance (38 overused songs forbidden), (3) Popularity spread (max 2 mainstream, min 3 deep cuts), (4) Era spread (min 3 decades), (5) No repeated artists, (6) Visual connection for each song (not generic mood matching). Apply the Reddit taste test: would this get upvoted on r/musicsuggestions?',
+              text: 'Analyze this image and recommend 8-10 songs that match its mood and context. Follow the comprehensive v2.0 recommendation rules including: (1) Texture matching (grain of photo → grain of production), (2) Blacklist compliance (38 overused songs forbidden), (3) Popularity spread (max 1 mainstream, min 3 deep cuts), (4) Era spread (min 3 decades), (5) No repeated artists, (6) Visual connection for each song (not generic mood matching). Apply the Reddit taste test: would this get upvoted on r/musicsuggestions?',
             },
             {
               type: 'image_url',
