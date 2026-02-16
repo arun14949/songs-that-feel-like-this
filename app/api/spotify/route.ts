@@ -13,8 +13,23 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const songs: SongSuggestion[] = body.songs;
-    console.log(`Searching Spotify for ${songs.length} songs:`);
+    // Support progressive loading with phase parameter
+    const phase = body.phase || 'all'; // 'initial', 'remaining', or 'all'
+    let songs: SongSuggestion[];
+
+    if (phase === 'initial') {
+      // Load only first 3 songs for initial display
+      songs = body.songs.slice(0, 3);
+      console.log(`Progressive loading (initial): Searching Spotify for first ${songs.length} songs`);
+    } else if (phase === 'remaining') {
+      // Load remaining songs (already sliced by caller)
+      songs = body.songs;
+      console.log(`Progressive loading (remaining): Searching Spotify for ${songs.length} more songs`);
+    } else {
+      // Load all songs (default behavior)
+      songs = body.songs;
+      console.log(`Searching Spotify for ${songs.length} songs:`);
+    }
     songs.forEach((song, i) => {
       console.log(`${i + 1}. "${song.title}" by ${song.artist}`);
     });
@@ -43,15 +58,30 @@ export async function POST(request: NextRequest) {
     }
 
     // Filter out null results (songs not found on Spotify)
-    const tracks = results.filter(
+    const foundTracks = results.filter(
       (track): track is SpotifyTrack => track !== null
     );
 
-    const notFoundCount = results.length - tracks.length;
+    // Deduplicate tracks by Spotify ID (keep first occurrence)
+    const seenIds = new Set<string>();
+    const tracks = foundTracks.filter(track => {
+      if (seenIds.has(track.id)) {
+        console.log(`⚠️  Skipping duplicate track: "${track.name}" by ${track.artist} (ID: ${track.id})`);
+        return false;
+      }
+      seenIds.add(track.id);
+      return true;
+    });
+
+    const notFoundCount = results.length - foundTracks.length;
+    const duplicateCount = foundTracks.length - tracks.length;
     if (notFoundCount > 0) {
       console.log(`⚠️  Could not find ${notFoundCount} out of ${songs.length} songs on Spotify`);
     }
-    console.log(`✅ Found ${tracks.length} songs on Spotify`);
+    if (duplicateCount > 0) {
+      console.log(`⚠️  Removed ${duplicateCount} duplicate song(s)`);
+    }
+    console.log(`✅ Found ${tracks.length} unique songs on Spotify`);
 
     return NextResponse.json({ tracks });
   } catch (error: any) {

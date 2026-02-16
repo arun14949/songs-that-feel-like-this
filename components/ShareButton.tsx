@@ -71,6 +71,11 @@ export default function ShareButton({ imageUrl }: ShareButtonProps = {}) {
     console.log('handleShare called');
     playClick();
 
+    // Check if we're in the browser
+    if (typeof window === 'undefined') {
+      return;
+    }
+
     const url = window.location.href;
     const shareText = 'Check out these song recommendations based on my image!';
     const fullMessage = `${shareText}\n\n${url}`;

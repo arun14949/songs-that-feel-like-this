@@ -68,14 +68,28 @@ export async function POST(request: NextRequest) {
     console.log(`[Analyze API] OpenAI responded in ${(duration / 1000).toFixed(1)}s`);
 
     const content = response.choices[0]?.message?.content || '{}';
-    const result = JSON.parse(content);
+    console.log('[Analyze API] Raw OpenAI response:', content.substring(0, 200) + '...');
 
-    // Validate response structure (v2.0 supports both mood and mood_profile)
-    if (!result.mood && !result.mood_profile) {
-      throw new Error('Invalid response format from AI: missing mood or mood_profile');
+    let result;
+    try {
+      result = JSON.parse(content);
+    } catch (parseError) {
+      console.error('[Analyze API] Failed to parse JSON:', parseError);
+      console.error('[Analyze API] Content was:', content);
+      throw new Error('Invalid JSON response from AI');
     }
+
+    // Validate songs array first (most important)
     if (!result.songs || !Array.isArray(result.songs)) {
+      console.error('[Analyze API] Response missing songs array:', JSON.stringify(result, null, 2));
       throw new Error('Invalid response format from AI: missing songs array');
+    }
+
+    // Check if response has any mood information (v2.0 supports both formats)
+    const hasMoodInfo = result.mood || result.mood_profile || result.image_category;
+    if (!hasMoodInfo) {
+      console.warn('[Analyze API] Response missing mood information, using fallback');
+      // Continue anyway - we can generate mood from mood_profile later
     }
 
     // Validate Indian music percentage
@@ -114,12 +128,12 @@ export async function POST(request: NextRequest) {
       result.songs = [...nonPratikSongs, ...pratikSongs.slice(0, 1)];
     }
 
-    // Ensure song count is between 8-10 (v2.0 increased from 5-6)
-    if (result.songs.length < 8) {
-      console.warn(`Only ${result.songs.length} songs returned, minimum is 8`);
-    } else if (result.songs.length > 10) {
-      console.warn(`${result.songs.length} songs returned, limiting to 10`);
-      result.songs = result.songs.slice(0, 10);
+    // Ensure song count is between 4-5 (v2.0 optimized for progressive loading)
+    if (result.songs.length < 4) {
+      console.warn(`Only ${result.songs.length} songs returned, minimum is 4`);
+    } else if (result.songs.length > 5) {
+      console.warn(`${result.songs.length} songs returned, limiting to 5`);
+      result.songs = result.songs.slice(0, 5);
     }
 
     // Map mood_profile to mood string if needed (v2.0 format)

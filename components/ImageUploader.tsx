@@ -2,7 +2,6 @@
 
 import { useState, useRef } from 'react';
 import { useSounds } from '@/hooks/useSounds';
-import heic2any from 'heic2any';
 
 interface ImageUploaderProps {
   onUpload: (base64: string) => void;
@@ -20,7 +19,16 @@ export default function ImageUploader({ onUpload, disabled }: ImageUploaderProps
   const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/jpg', 'image/heic', 'image/heif'];
 
   const validateFile = (file: File): string | null => {
-    if (!ALLOWED_TYPES.includes(file.type)) {
+    // Check file extension for HEIC (iOS browsers often don't set correct MIME type)
+    const fileName = file.name.toLowerCase();
+    const hasValidExtension = fileName.endsWith('.jpg') ||
+                             fileName.endsWith('.jpeg') ||
+                             fileName.endsWith('.png') ||
+                             fileName.endsWith('.webp') ||
+                             fileName.endsWith('.heic') ||
+                             fileName.endsWith('.heif');
+
+    if (!ALLOWED_TYPES.includes(file.type) && !hasValidExtension) {
       return 'Please upload a JPG, PNG, WebP, or HEIC image';
     }
     if (file.size > MAX_FILE_SIZE) {
@@ -96,10 +104,21 @@ export default function ImageUploader({ onUpload, disabled }: ImageUploaderProps
     try {
       let processedFile = file;
 
+      // Detect HEIC/HEIF files - check file extension first (more reliable than MIME type on iOS)
+      const fileName = file.name.toLowerCase();
+      const isHEIC = fileName.endsWith('.heic') ||
+                     fileName.endsWith('.heif') ||
+                     file.type === 'image/heic' ||
+                     file.type === 'image/heif';
+
       // Convert HEIC/HEIF to JPEG if needed
-      if (file.type === 'image/heic' || file.type === 'image/heif' || file.name.toLowerCase().endsWith('.heic') || file.name.toLowerCase().endsWith('.heif')) {
-        console.log('Converting HEIC to JPEG...');
+      if (isHEIC) {
+        console.log('Detecting HEIC file, attempting conversion...');
+        console.log('File name:', file.name, 'File type:', file.type);
+
         try {
+          // Dynamically import heic2any only when needed (avoids SSR issues)
+          const heic2any = (await import('heic2any')).default;
           const convertedBlob = await heic2any({
             blob: file,
             toType: 'image/jpeg',
@@ -107,11 +126,11 @@ export default function ImageUploader({ onUpload, disabled }: ImageUploaderProps
           });
           // heic2any can return Blob or Blob[], handle both cases
           const blob = Array.isArray(convertedBlob) ? convertedBlob[0] : convertedBlob;
-          processedFile = new File([blob], file.name.replace(/\.heic$/i, '.jpg'), { type: 'image/jpeg' });
-          console.log('HEIC converted successfully');
+          processedFile = new File([blob], file.name.replace(/\.(heic|heif)$/i, '.jpg'), { type: 'image/jpeg' });
+          console.log('HEIC converted successfully to JPEG');
         } catch (heicError) {
-          console.error('HEIC conversion failed:', heicError);
-          setError('Failed to convert HEIC image. Please try converting to JPG first.');
+          console.error('HEIC conversion error details:', heicError);
+          setError('Could not convert HEIC image. Please try taking a photo in JPG format from camera settings.');
           return;
         }
       }
@@ -229,7 +248,7 @@ export default function ImageUploader({ onUpload, disabled }: ImageUploaderProps
                       </div>
 
                       {/* File requirements */}
-                      <p className="font-[family-name:var(--font-sans)] text-[14px] text-[#5c5c5c] tracking-wide mt-1">
+                      <p className="font-[family-name:var(--font-sans)] text-[14px] text-[#5c5c5c] tracking-wide mt-1 whitespace-nowrap">
                         JPG, PNG, HEIC • Max 10MB
                       </p>
                     </div>

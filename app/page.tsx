@@ -53,12 +53,15 @@ export default function Home() {
 
       console.log(`AI recommended ${songs.length} songs`);
 
-      // Step 2: Enrich with Spotify data (show progress)
-      setLoadingMessage('Finding songs on Spotify...');
+      // Step 2: Fetch ONLY first 3 songs for initial display (progressive loading)
+      setLoadingMessage('Finding first songs on Spotify...');
       const spotifyResponse = await fetch('/api/spotify', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ songs }),
+        body: JSON.stringify({
+          songs: songs.slice(0, 3), // Only first 3 songs
+          phase: 'initial'
+        }),
       });
 
       if (!spotifyResponse.ok) {
@@ -83,18 +86,23 @@ export default function Home() {
 
       const { tracks }: { tracks: SpotifyTrack[] } = await spotifyResponse.json();
 
-      console.log(`Found ${tracks.length} songs on Spotify out of ${songs.length} recommended`);
+      console.log(`Found ${tracks.length} initial songs on Spotify out of ${songs.length} total recommended`);
 
-      // Require at least 3 songs to show results (lowered threshold for 5-6 song recommendations)
-      if (tracks.length < 3) {
+      // Require at least 2 songs to show results (lowered for progressive loading)
+      if (tracks.length < 2) {
         throw new Error('Could not find these songs on Spotify. Please try a different image or try again.');
       }
 
-      // Step 3: Save recommendation
+      // Step 3: Save recommendation with initial tracks + all song suggestions for background loading
       const saveResponse = await fetch('/api/save', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ mood, songs: tracks, imageUrl: base64Image }),
+        body: JSON.stringify({
+          mood,
+          songs: tracks, // Initial 3 songs with Spotify data
+          allSongSuggestions: songs, // Store ALL 4-5 AI suggestions for progressive loading
+          imageUrl: base64Image
+        }),
       });
 
       if (!saveResponse.ok) {
@@ -218,7 +226,7 @@ export default function Home() {
       {/* Footer */}
       <footer className="mt-auto pt-16 text-center z-10">
         <p className="font-[family-name:var(--font-sans)] text-[12px] text-[#b2b2b2] tracking-wide">
-          © Inspired Monster · Version 1.2.0
+          © Inspired Monster · Version 1.3.2
         </p>
       </footer>
     </main>

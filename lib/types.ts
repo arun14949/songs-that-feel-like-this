@@ -32,7 +32,8 @@ export interface SpotifyTrack {
 export interface Recommendation {
   id: string;
   mood: string;
-  songs: SpotifyTrack[];
+  songs: SpotifyTrack[];           // Initial 3 songs with Spotify data (or all songs if fully loaded)
+  allSongSuggestions?: SongSuggestion[]; // Original 4-5 AI suggestions for progressive loading
   imageUrl?: string;  // Base64 encoded uploaded image
   createdAt: string;
 }

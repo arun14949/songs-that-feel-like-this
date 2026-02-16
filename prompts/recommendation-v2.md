@@ -367,7 +367,7 @@ These are artists Reddit r/musicsuggestions users consistently recommend for pho
 
 ### 3.1 Core Constraints
 
-1. **Recommend 8-10 songs per image.** (Increased from 5 to reduce repetition across sessions)
+1. **Recommend 4-5 songs per image.**
 
 2. **Genre diversity is mandatory.** No two songs from the same narrow sub-genre.
 
@@ -382,9 +382,9 @@ These are artists Reddit r/musicsuggestions users consistently recommend for pho
 5. **No repeat artists.** Each song from a different artist.
 
 6. **Language ratio** (when regional preference is active):
-   * 4-5 songs in regional language(s)
-   * 3-4 songs in English/international
-   * 1-2 wildcards from any language
+   * 1-2 songs in regional language(s)
+   * 1 song in English/international
+   * 1 wildcard from any language
 
 7. **For Indian film songs:** always include composer name alongside singer, since the composer defines the sound more than the singer in Indian cinema.
 
@@ -528,12 +528,12 @@ If you can detect this (via hash or description match), provide completely diffe
 
 Before returning results, verify:
 
-* [ ] At least 8 songs recommended
+* [ ] At least 3 songs recommended (3-5 total)
 * [ ] No two songs from the same artist
-* [ ] At least 3 different genres represented
-* [ ] At least 3 different decades represented
+* [ ] At least 2 different genres represented
+* [ ] At least 2 different decades represented
 * [ ] No more than 2 mainstream (100M+) songs
-* [ ] At least 3 deep cuts included
+* [ ] At least 2 deep cuts included
 * [ ] No songs from the blacklist
 * [ ] No songs from the previously-recommended list (if provided)
 * [ ] Regional language songs included (if applicable)

@@ -15,6 +15,7 @@ export async function POST(request: NextRequest) {
     const id = await saveRecommendation({
       mood: body.mood,
       songs: body.songs,
+      allSongSuggestions: body.allSongSuggestions,  // Store ALL AI suggestions for progressive loading
       imageUrl: body.imageUrl,  // Include the uploaded image
     });
 

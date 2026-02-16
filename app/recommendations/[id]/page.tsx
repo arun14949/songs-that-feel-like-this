@@ -18,6 +18,7 @@ export default function RecommendationPage({
   const router = useRouter();
   const [recommendation, setRecommendation] = useState<Recommendation | null>(null);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [id, setId] = useState<string>('');
 
@@ -48,6 +49,56 @@ export default function RecommendationPage({
     } catch (err: any) {
       setError(err.message || 'Failed to load recommendation');
       setLoading(false);
+    }
+  };
+
+  // Progressive loading: Load remaining songs in background
+  useEffect(() => {
+    if (!recommendation || !recommendation.allSongSuggestions) return;
+
+    const loadedCount = recommendation.songs.length;
+    const totalCount = recommendation.allSongSuggestions.length;
+
+    // If we have more songs to load (e.g., loaded 3, total 4-5)
+    if (loadedCount < totalCount) {
+      loadRemainingSongs(recommendation);
+    }
+  }, [recommendation]);
+
+  const loadRemainingSongs = async (rec: Recommendation) => {
+    setLoadingMore(true);
+    console.log(`Background loading: Fetching ${rec.allSongSuggestions!.length - rec.songs.length} remaining songs`);
+
+    try {
+      // Get remaining song suggestions (e.g., songs 4-5)
+      const remainingSuggestions = rec.allSongSuggestions!.slice(rec.songs.length);
+
+      const response = await fetch('/api/spotify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          songs: remainingSuggestions,
+          phase: 'remaining'
+        }),
+      });
+
+      if (response.ok) {
+        const { tracks } = await response.json();
+        console.log(`Background loading: Found ${tracks.length} additional songs`);
+
+        // Update recommendation with new songs
+        setRecommendation(prev => prev ? {
+          ...prev,
+          songs: [...prev.songs, ...tracks]
+        } : null);
+      } else {
+        console.warn('Failed to load remaining songs, but user already has initial songs');
+      }
+    } catch (error) {
+      console.error('Failed to load remaining songs:', error);
+      // Silently fail - user already has initial songs to enjoy
+    } finally {
+      setLoadingMore(false);
     }
   };
 
@@ -143,6 +194,15 @@ export default function RecommendationPage({
 
               {/* Song Recommendations */}
               <SongRecommendations songs={recommendation.songs} />
+
+              {/* Loading More Songs Indicator */}
+              {loadingMore && (
+                <div className="mt-6 text-center">
+                  <p className="font-[family-name:var(--font-sans)] text-sm text-[#8b4513] animate-pulse">
+                    Loading more songs...
+                  </p>
+                </div>
+              )}
             </>
           )}
         </div>
