@@ -99,7 +99,10 @@ export default function RecommendationPage({
                       {'Oops!!\nRecommendation not found.'}
                     </h2>
                     <p className="font-[family-name:var(--font-sans)] text-base text-[#5c5c5c] leading-[1.4]">
-                      This recommendation may have been deleted or the link might be invalid.
+                      This recommendation may have expired (links last 7 days), been deleted, or the link might be invalid.
+                    </p>
+                    <p className="font-[family-name:var(--font-sans)] text-base text-[#5c5c5c] leading-[1.4]">
+                      Upload a new image to create fresh recommendations!
                     </p>
                   </div>
 

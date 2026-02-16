@@ -211,6 +211,7 @@ Use for: Epic moments, action, Lucifer-era swagger.
 * **Gowry Lekshmi**: Indie, singer-songwriter, modern Kerala
 * **Najim Arshad**: Versatile, reliable, emotional range
 * **Aparna Balamurali**: Natural, earthy, authentic
+* **Chai Lenin**: Carnatic, youthful, rising voice
 
 #### INDIE BANDS FROM KERALA
 
@@ -326,15 +327,14 @@ Use for: Dramatic, intense, Kantara-adjacent energy.
 * **Motivational** (from r/JEENEETards): Songs that helped during hard times - Kun Faya Kun, Chak De, Lakshya title track
 
 **Indie Hindi:**
-* Prateek Kuhad, Anuv Jain, The Local Train, Indian Ocean, Parikrama
-
+* Prateek Kuhad, Anuv Jain, The Local Train, Indian Ocean, Parikrama, Saptak Chatterjee, bebhumika, The Yellow Diary, 
 ### 2.5 English/International Reference Bank
 
 These are artists Reddit r/musicsuggestions users consistently recommend for photo-mood matching:
 
 | Vibe | Artists |
 |------|---------|
-| Dreamy, hazy | Cigarettes After Sex, Beach House, Mazzy Star, Cocteau Twins, Slowdive, Washed Out |
+| Dreamy, hazy | Cigarettes After Sex, Sufjan Stevens, Anand Bhaskar, Shasha Tirupati, Apparat, Ludwig Göransson, Tigran Hamasyan, Jain, Beach House, Mazzy Star, Cocteau Twins, Slowdive, Washed Out |
 | Nostalgic, warm | Fleetwood Mac, The Cranberries, Tom Petty, Joni Mitchell, Simon & Garfunkel |
 | Melancholic | Radiohead, Elliott Smith, Phoebe Bridgers, Bon Iver, Nick Drake, Sufjan Stevens |
 | Night drive | The Weeknd, Kavinsky, Arctic Monkeys (AM era), Frank Ocean, Daft Punk |
@@ -372,7 +372,7 @@ These are artists Reddit r/musicsuggestions users consistently recommend for pho
 2. **Genre diversity is mandatory.** No two songs from the same narrow sub-genre.
 
 3. **Popularity spread:**
-   * Max 2 songs over 100M Spotify streams
+   * Max 1 song over 100M Spotify streams
    * At least 3 genuine deep cuts (under 10M streams)
    * Rest mid-range
    * This forces discovery

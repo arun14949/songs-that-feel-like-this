@@ -19,6 +19,10 @@ export default function Home() {
     setError(null);
     setUploadedImage(base64Image);  // Store the uploaded image
 
+    // Create abort controller with 60s timeout (longer than OpenAI's 45s)
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 60000);
+
     try {
       // Step 1: Analyze image (more descriptive messages)
       setLoadingMessage('Understanding your image...');
@@ -26,7 +30,10 @@ export default function Home() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ image: base64Image }),
+        signal: controller.signal,
       });
+
+      clearTimeout(timeoutId); // Clear timeout if request succeeds
 
       if (!analyzeResponse.ok) {
         const errorData = await analyzeResponse.json().catch(() => ({ error: 'Failed to analyze image' }));
@@ -94,6 +101,15 @@ export default function Home() {
       // Step 4: Redirect to results
       router.push(`/recommendations/${id}`);
     } catch (err: any) {
+      clearTimeout(timeoutId);
+
+      // Handle abort/timeout specifically
+      if (err.name === 'AbortError') {
+        setError('Request took too long. Please try with a smaller image or check your internet connection.');
+        setLoading(false);
+        return;
+      }
+
       setError(err.message || 'Something went wrong. Please try again.');
       setLoading(false);
     }

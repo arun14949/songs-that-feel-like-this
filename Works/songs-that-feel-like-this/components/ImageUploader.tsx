@@ -15,7 +15,7 @@ export default function ImageUploader({ onUpload, disabled }: ImageUploaderProps
   const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+  const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
   const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/jpg'];
 
   const validateFile = (file: File): string | null => {
@@ -23,7 +23,7 @@ export default function ImageUploader({ onUpload, disabled }: ImageUploaderProps
       return 'Please upload a JPG, PNG, or WebP image';
     }
     if (file.size > MAX_FILE_SIZE) {
-      return 'Image must be less than 5MB';
+      return 'Image must be less than 10MB';
     }
     return null;
   };
@@ -150,7 +150,7 @@ export default function ImageUploader({ onUpload, disabled }: ImageUploaderProps
 
                       {/* File requirements */}
                       <p className="font-[family-name:var(--font-sans)] text-[14px] text-[#5c5c5c] tracking-wide mt-1">
-                        JPG, PNG • Max 5MB
+                        JPG, PNG • Max 10MB
                       </p>
                     </div>
                     {/* Paper Texture Overlay */}

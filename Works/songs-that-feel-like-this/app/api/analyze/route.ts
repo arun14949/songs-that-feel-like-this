@@ -153,9 +153,33 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Handle image size errors specifically
+    if (error?.message?.includes('Request Entity Too Large') || error?.code === 'ERR_BODY_LIMIT_EXCEEDED') {
+      return NextResponse.json(
+        { error: 'Image is too large. Please use an image under 10MB or reduce its resolution.' },
+        { status: 413 }
+      );
+    }
+
+    // Handle OpenAI content policy violations
+    if (error?.type === 'invalid_request_error' && error?.message?.includes('content_policy')) {
+      return NextResponse.json(
+        { error: 'This image cannot be processed due to content policy restrictions. Please try a different image.' },
+        { status: 400 }
+      );
+    }
+
+    // Handle OpenAI context length errors (image too complex)
+    if (error?.message?.includes('context_length') || error?.message?.includes('maximum context length')) {
+      return NextResponse.json(
+        { error: 'This image is too complex or high-resolution. Please try a smaller or simpler image.' },
+        { status: 400 }
+      );
+    }
+
     // Generic error with helpful message
     return NextResponse.json(
-      { error: error?.message || 'Failed to analyze image. Please try again.' },
+      { error: error?.message || 'Failed to analyze image. Please try again with a different image or check your connection.' },
       { status: 500 }
     );
   }
