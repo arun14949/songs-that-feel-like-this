@@ -29,6 +29,7 @@
     "eslint": "^9.39.2",
     "eslint-config-next": "^16.1.6",
     "framer-motion": "^12.34.0",
+    "heic2any": "^0.0.4",
     "lottie-react": "^2.4.1",
     "nanoid": "^5.1.6",
     "next": "^16.1.6",

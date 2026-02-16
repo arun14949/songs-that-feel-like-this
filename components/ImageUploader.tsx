@@ -2,6 +2,7 @@
 
 import { useState, useRef } from 'react';
 import { useSounds } from '@/hooks/useSounds';
+import heic2any from 'heic2any';
 
 interface ImageUploaderProps {
   onUpload: (base64: string) => void;
@@ -16,11 +17,11 @@ export default function ImageUploader({ onUpload, disabled }: ImageUploaderProps
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
-  const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/jpg'];
+  const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/jpg', 'image/heic', 'image/heif'];
 
   const validateFile = (file: File): string | null => {
     if (!ALLOWED_TYPES.includes(file.type)) {
-      return 'Please upload a JPG, PNG, or WebP image';
+      return 'Please upload a JPG, PNG, WebP, or HEIC image';
     }
     if (file.size > MAX_FILE_SIZE) {
       return 'Image must be less than 10MB';
@@ -93,12 +94,34 @@ export default function ImageUploader({ onUpload, disabled }: ImageUploaderProps
     }
 
     try {
+      let processedFile = file;
+
+      // Convert HEIC/HEIF to JPEG if needed
+      if (file.type === 'image/heic' || file.type === 'image/heif' || file.name.toLowerCase().endsWith('.heic') || file.name.toLowerCase().endsWith('.heif')) {
+        console.log('Converting HEIC to JPEG...');
+        try {
+          const convertedBlob = await heic2any({
+            blob: file,
+            toType: 'image/jpeg',
+            quality: 0.9,
+          });
+          // heic2any can return Blob or Blob[], handle both cases
+          const blob = Array.isArray(convertedBlob) ? convertedBlob[0] : convertedBlob;
+          processedFile = new File([blob], file.name.replace(/\.heic$/i, '.jpg'), { type: 'image/jpeg' });
+          console.log('HEIC converted successfully');
+        } catch (heicError) {
+          console.error('HEIC conversion failed:', heicError);
+          setError('Failed to convert HEIC image. Please try converting to JPG first.');
+          return;
+        }
+      }
+
       // Get original for preview
-      const originalBase64 = await convertToBase64(file);
+      const originalBase64 = await convertToBase64(processedFile);
       setPreview(originalBase64);
 
       // Resize and compress for upload/AI analysis
-      const compressedBase64 = await resizeAndCompressImage(file);
+      const compressedBase64 = await resizeAndCompressImage(processedFile);
 
       // Log compression stats for debugging
       const originalSize = (originalBase64.length * 0.75) / (1024 * 1024); // Approximate MB
@@ -107,6 +130,7 @@ export default function ImageUploader({ onUpload, disabled }: ImageUploaderProps
 
       onUpload(compressedBase64);
     } catch (err) {
+      console.error('Image processing error:', err);
       setError('Failed to process image');
     }
   };
@@ -168,7 +192,7 @@ export default function ImageUploader({ onUpload, disabled }: ImageUploaderProps
                 ref={fileInputRef}
                 type="file"
                 className="hidden"
-                accept="image/jpeg,image/jpg,image/png,image/webp"
+                accept="image/jpeg,image/jpg,image/png,image/webp,image/heic,image/heif"
                 onChange={handleChange}
                 disabled={disabled}
               />
@@ -206,7 +230,7 @@ export default function ImageUploader({ onUpload, disabled }: ImageUploaderProps
 
                       {/* File requirements */}
                       <p className="font-[family-name:var(--font-sans)] text-[14px] text-[#5c5c5c] tracking-wide mt-1">
-                        JPG, PNG • Max 10MB
+                        JPG, PNG, HEIC • Max 10MB
                       </p>
                     </div>
                     {/* Paper Texture Overlay */}
