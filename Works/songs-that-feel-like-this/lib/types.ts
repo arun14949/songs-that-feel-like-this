@@ -9,6 +9,14 @@ export interface SongSuggestion {
   language?: string;
   category?: string;
   reason?: string;
+  // v2.0 additions for richer metadata
+  album?: string;
+  year?: number;
+  composer?: string;
+  spotify_search_query?: string;
+  visual_connection?: string;  // More specific than "reason"
+  genre_tag?: string;
+  popularity_tier?: 'mainstream' | 'well_known' | 'deep_cut' | 'obscure';
 }
 
 export interface SpotifyTrack {
