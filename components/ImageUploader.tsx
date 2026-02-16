@@ -37,6 +37,52 @@ export default function ImageUploader({ onUpload, disabled }: ImageUploaderProps
     });
   };
 
+  const resizeAndCompressImage = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          // Target max dimensions for AI analysis (smaller = faster upload & processing)
+          const MAX_WIDTH = 1024;
+          const MAX_HEIGHT = 1024;
+
+          let width = img.width;
+          let height = img.height;
+
+          // Calculate scaling to fit within max dimensions while preserving aspect ratio
+          if (width > MAX_WIDTH || height > MAX_HEIGHT) {
+            const ratio = Math.min(MAX_WIDTH / width, MAX_HEIGHT / height);
+            width = Math.floor(width * ratio);
+            height = Math.floor(height * ratio);
+          }
+
+          // Create canvas and draw resized image
+          const canvas = document.createElement('canvas');
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+
+          if (!ctx) {
+            reject(new Error('Failed to get canvas context'));
+            return;
+          }
+
+          ctx.drawImage(img, 0, 0, width, height);
+
+          // Convert to JPEG with 0.8 quality (good balance of quality vs size)
+          // This typically reduces file size by 70-90% while maintaining visual quality
+          const compressedBase64 = canvas.toDataURL('image/jpeg', 0.8);
+          resolve(compressedBase64);
+        };
+        img.onerror = () => reject(new Error('Failed to load image'));
+        img.src = e.target?.result as string;
+      };
+      reader.onerror = () => reject(new Error('Failed to read file'));
+      reader.readAsDataURL(file);
+    });
+  };
+
   const handleFile = async (file: File) => {
     setError(null);
 
@@ -47,9 +93,19 @@ export default function ImageUploader({ onUpload, disabled }: ImageUploaderProps
     }
 
     try {
-      const base64 = await convertToBase64(file);
-      setPreview(base64);
-      onUpload(base64);
+      // Get original for preview
+      const originalBase64 = await convertToBase64(file);
+      setPreview(originalBase64);
+
+      // Resize and compress for upload/AI analysis
+      const compressedBase64 = await resizeAndCompressImage(file);
+
+      // Log compression stats for debugging
+      const originalSize = (originalBase64.length * 0.75) / (1024 * 1024); // Approximate MB
+      const compressedSize = (compressedBase64.length * 0.75) / (1024 * 1024); // Approximate MB
+      console.log(`Image compressed: ${originalSize.toFixed(2)}MB → ${compressedSize.toFixed(2)}MB (${Math.round((1 - compressedSize/originalSize) * 100)}% reduction)`);
+
+      onUpload(compressedBase64);
     } catch (err) {
       setError('Failed to process image');
     }
