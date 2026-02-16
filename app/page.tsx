@@ -42,6 +42,16 @@ export default function Home() {
       if (!analyzeResponse.ok) {
         const errorData = await analyzeResponse.json().catch(() => ({ error: 'Failed to analyze image' }));
         console.error('Analyze API error:', errorData, 'Status:', analyzeResponse.status);
+
+        // Provide more specific error messages based on status code
+        if (analyzeResponse.status === 413) {
+          throw new Error('Image is too large. Please try a smaller image (under 5MB).');
+        } else if (analyzeResponse.status === 500) {
+          throw new Error('Server error while analyzing image. Please try again in a moment.');
+        } else if (analyzeResponse.status === 429) {
+          throw new Error('Too many requests. Please wait a moment and try again.');
+        }
+
         throw new Error(errorData.error || 'Failed to analyze image. Please try again.');
       }
 
@@ -115,6 +125,12 @@ export default function Home() {
       router.push(`/recommendations/${id}`);
     } catch (err: any) {
       clearTimeout(timeoutId);
+
+      // Log full error details for debugging
+      console.error('Upload error:', err);
+      console.error('Error name:', err.name);
+      console.error('Error message:', err.message);
+      console.error('Error stack:', err.stack);
 
       // Handle abort/timeout specifically
       if (err.name === 'AbortError') {
@@ -226,7 +242,7 @@ export default function Home() {
       {/* Footer */}
       <footer className="mt-auto pt-16 text-center z-10">
         <p className="font-[family-name:var(--font-sans)] text-[12px] text-[#b2b2b2] tracking-wide">
-          © Inspired Monster · Version 1.3.2
+          © Inspired Monster · Version 1.3.3
         </p>
       </footer>
     </main>
