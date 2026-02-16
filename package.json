@@ -1,6 +1,6 @@
 {
   "name": "songs-that-feel-like-this",
-  "version": "1.0.5",
+  "version": "1.1.0",
   "description": "Upload an image, discover songs that match its vibe",
   "scripts": {
     "dev": "next dev",
