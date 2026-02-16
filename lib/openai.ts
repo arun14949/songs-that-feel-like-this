@@ -9,8 +9,8 @@ function getOpenAIClient() {
     }
     _openai = new OpenAI({
       apiKey: process.env.OPENAI_API_KEY,
-      timeout: 45000, // 45 second timeout for vision API calls (increased for large images)
-      maxRetries: 2, // Retry twice on transient failures
+      timeout: 55000, // 55 second timeout for vision API calls (allows processing of large/complex images)
+      maxRetries: 1, // Single retry on transient failures (reduces total wait time)
     });
   }
   return _openai;
