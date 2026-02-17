@@ -19,10 +19,29 @@ if (hasRedisURL && !hasVercelKV) {
     redisClient = new Redis(process.env.REDIS_URL!, {
       maxRetriesPerRequest: 3,
       enableOfflineQueue: false,
+      connectTimeout: 10000, // 10 second connection timeout
+      retryStrategy: (times) => {
+        if (times > 3) {
+          console.error('[Redis] Max retry attempts reached');
+          return null; // Stop retrying
+        }
+        return Math.min(times * 200, 2000); // Exponential backoff
+      },
     });
+
+    // Add error handler
+    redisClient.on('error', (err) => {
+      console.error('[Redis] Connection error:', err.message);
+    });
+
+    redisClient.on('connect', () => {
+      console.log('✅ Redis connected successfully');
+    });
+
     console.log('✅ Redis detected - using persistent storage (ioredis)');
   } catch (error) {
     console.error('Failed to initialize Redis client:', error);
+    redisClient = null;
   }
 }
 
@@ -50,15 +69,26 @@ export async function saveRecommendation(
 
       // Use ioredis if REDIS_URL is set and Vercel KV is not available
       if (redisClient) {
-        await redisClient.setex(key, expiration, JSON.stringify(recommendation));
-        console.log(`Saved recommendation ${id} to Redis (ioredis)`);
+        // Check if Redis is connected
+        if (redisClient.status !== 'ready' && redisClient.status !== 'connecting') {
+          console.warn(`[Redis] Client not ready (status: ${redisClient.status}), falling back to in-memory`);
+          recommendations.set(id, recommendation);
+        } else {
+          try {
+            await redisClient.setex(key, expiration, JSON.stringify(recommendation));
+            console.log(`✅ Saved recommendation ${id} to Redis (ioredis)`);
+          } catch (redisError: any) {
+            console.error(`[Redis] Save error: ${redisError.message}, falling back to in-memory`);
+            recommendations.set(id, recommendation);
+          }
+        }
       } else {
         // Use Vercel KV REST API
         await kv.set(key, recommendation, { ex: expiration });
-        console.log(`Saved recommendation ${id} to Vercel KV (REST)`);
+        console.log(`✅ Saved recommendation ${id} to Vercel KV (REST)`);
       }
-    } catch (error) {
-      console.error('Error saving to KV/Redis, falling back to in-memory:', error);
+    } catch (error: any) {
+      console.error(`Error saving to KV/Redis (${error.message}), falling back to in-memory`);
       recommendations.set(id, recommendation);
     }
   } else {
@@ -80,26 +110,38 @@ export async function getRecommendation(
 
       // Use ioredis if REDIS_URL is set and Vercel KV is not available
       if (redisClient) {
-        const data = await redisClient.get(key);
-        if (data) {
-          recommendation = JSON.parse(data);
-          console.log(`Retrieved recommendation ${id} from Redis (ioredis)`);
+        // Check if Redis is connected
+        if (redisClient.status !== 'ready' && redisClient.status !== 'connecting') {
+          console.warn(`[Redis] Client not ready (status: ${redisClient.status}), checking in-memory`);
+          recommendation = recommendations.get(id) || null;
         } else {
-          console.log(`Recommendation ${id} not found in Redis`);
+          try {
+            const data = await redisClient.get(key);
+            if (data) {
+              recommendation = JSON.parse(data);
+              console.log(`✅ Retrieved recommendation ${id} from Redis (ioredis)`);
+            } else {
+              console.log(`Recommendation ${id} not found in Redis, checking in-memory fallback`);
+              recommendation = recommendations.get(id) || null;
+            }
+          } catch (redisError: any) {
+            console.error(`[Redis] Get error: ${redisError.message}, checking in-memory`);
+            recommendation = recommendations.get(id) || null;
+          }
         }
       } else {
         // Use Vercel KV REST API
         recommendation = await kv.get<Recommendation>(key);
         if (recommendation) {
-          console.log(`Retrieved recommendation ${id} from Vercel KV (REST)`);
+          console.log(`✅ Retrieved recommendation ${id} from Vercel KV (REST)`);
         } else {
           console.log(`Recommendation ${id} not found in Vercel KV`);
         }
       }
 
       return recommendation;
-    } catch (error) {
-      console.error('Error reading from KV/Redis, falling back to in-memory:', error);
+    } catch (error: any) {
+      console.error(`Error reading from KV/Redis (${error.message}), checking in-memory`);
       return recommendations.get(id) || null;
     }
   } else {
