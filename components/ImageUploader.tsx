@@ -128,9 +128,20 @@ export default function ImageUploader({ onUpload, disabled }: ImageUploaderProps
           const blob = Array.isArray(convertedBlob) ? convertedBlob[0] : convertedBlob;
           processedFile = new File([blob], file.name.replace(/\.(heic|heif)$/i, '.jpg'), { type: 'image/jpeg' });
           console.log('HEIC converted successfully to JPEG');
-        } catch (heicError) {
+        } catch (heicError: any) {
           console.error('HEIC conversion error details:', heicError);
-          setError('Could not convert HEIC image. Please try taking a photo in JPG format from camera settings.');
+
+          // Provide specific guidance based on error code
+          let errorMessage = 'Could not convert HEIC image. ';
+          if (heicError?.code === 2 || heicError?.message?.includes('FORMAT_NOT_SUPPORTED')) {
+            errorMessage += 'This HEIC format variant is not supported. Please:';
+            errorMessage += '\n1. Use your camera app to take a new photo in JPG format';
+            errorMessage += '\n2. Or convert the HEIC to JPG using your photo app before uploading';
+          } else {
+            errorMessage += 'Please try taking a photo in JPG format from camera settings.';
+          }
+
+          setError(errorMessage);
           return;
         }
       }
@@ -278,7 +289,7 @@ export default function ImageUploader({ onUpload, disabled }: ImageUploaderProps
 
       {error && (
         <div className="mt-4 bg-red-50 border border-red-200 rounded-lg p-4">
-          <p className="text-sm text-red-800">{error}</p>
+          <p className="text-sm text-red-800 whitespace-pre-line">{error}</p>
         </div>
       )}
     </div>
