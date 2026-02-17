@@ -1,6 +1,41 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { searchTrack } from '@/lib/spotify';
-import type { SongSuggestion, SpotifyTrack } from '@/lib/types';
+import { searchTrack, getTrackById } from '@/lib/spotify';
+import type { SongSuggestion, SpotifyTrack, CuratedSong } from '@/lib/types';
+import fs from 'fs';
+import path from 'path';
+
+// Load curated database for spotify_id lookup (cached at module level)
+let curatedSongs: CuratedSong[] | null = null;
+
+function loadCuratedSongs(): CuratedSong[] {
+  if (curatedSongs) return curatedSongs;
+  const dbPath = path.join(process.cwd(), 'data', 'songs', 'curated-indian-music.json');
+  const raw = fs.readFileSync(dbPath, 'utf-8');
+  const db = JSON.parse(raw);
+  curatedSongs = db.songs;
+  return curatedSongs!;
+}
+
+/**
+ * Find a curated song by matching title and artist
+ * Returns the curated song with spotify_id if found
+ */
+function findCuratedSong(title: string, artist: string): CuratedSong | undefined {
+  const songs = loadCuratedSongs();
+  const titleLower = title.toLowerCase().trim();
+  const artistLower = artist.toLowerCase().trim();
+
+  return songs.find(s => {
+    const sTitleLower = s.title.toLowerCase().trim();
+    const sArtistLower = s.artist.toLowerCase().trim();
+
+    // Exact title match and artist contains or is contained
+    return sTitleLower === titleLower && (
+      sArtistLower.includes(artistLower) ||
+      artistLower.includes(sArtistLower)
+    );
+  });
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -40,7 +75,7 @@ export async function POST(request: NextRequest) {
     const searchStartTime = Date.now();
 
     // Search for each song on Spotify SEQUENTIALLY to avoid rate limiting
-    // Instead of Promise.all (parallel), we do one at a time
+    // First try to match against curated database for exact spotify_id
     const results: (SpotifyTrack | null)[] = [];
     for (let i = 0; i < songs.length; i++) {
       // Check if we've exceeded max search time
@@ -50,11 +85,19 @@ export async function POST(request: NextRequest) {
       }
 
       const song = songs[i];
-      const track = await searchTrack(song.title, song.artist);
-      results.push(track);
 
-      // No delay needed - Spotify's rate limit is 180 requests/minute (3/second)
-      // Searching 6 songs sequentially without delays = ~1-2 seconds (well under limit)
+      // Try to find exact match in curated database first
+      const curatedMatch = findCuratedSong(song.title, song.artist);
+      if (curatedMatch) {
+        console.log(`✅ Curated match: "${song.title}" by ${song.artist} → spotify_id: ${curatedMatch.spotify_id}`);
+        const track = await getTrackById(curatedMatch.spotify_id);
+        results.push(track);
+      } else {
+        // Fallback to text search for non-curated songs
+        console.log(`⚠️  No curated match for "${song.title}" by ${song.artist}, using Spotify search`);
+        const track = await searchTrack(song.title, song.artist);
+        results.push(track);
+      }
     }
 
     // Filter out null results (songs not found on Spotify)

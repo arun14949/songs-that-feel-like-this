@@ -46,6 +46,43 @@ async function getAccessToken(): Promise<string> {
 // Helper to add delay between requests
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
+/**
+ * Get a track directly by its Spotify ID (no search needed)
+ */
+export async function getTrackById(spotifyId: string): Promise<SpotifyTrack | null> {
+  const accessToken = await getAccessToken();
+
+  try {
+    const response = await axios.get(`https://api.spotify.com/v1/tracks/${spotifyId}`, {
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+      },
+      timeout: 2000,
+    });
+
+    const track = response.data;
+    return {
+      id: track.id,
+      name: track.name,
+      artist: track.artists[0].name,
+      albumArt: track.album.images[0]?.url || '',
+      embedUrl: `https://open.spotify.com/embed/track/${track.id}`,
+      spotifyUrl: track.external_urls.spotify,
+      previewUrl: track.preview_url,
+    };
+  } catch (error: any) {
+    if (error.response?.status === 429) {
+      const retryAfter = error.response.headers['retry-after'] || '60';
+      const rateLimitError: any = new Error(`Spotify rate limit reached.`);
+      rateLimitError.isRateLimit = true;
+      rateLimitError.retryAfter = parseInt(retryAfter);
+      throw rateLimitError;
+    }
+    console.error(`Error fetching track ${spotifyId}:`, error.message);
+    return null;
+  }
+}
+
 export async function searchTrack(title: string, artist: string): Promise<SpotifyTrack | null> {
   const accessToken = await getAccessToken();
 

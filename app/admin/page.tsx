@@ -2,12 +2,56 @@
 
 import { useState, useEffect } from 'react';
 
-// Predefined options for dropdowns
+// Predefined options for dropdowns (with emojis for quick identification)
 const LANGUAGES = ['Malayalam', 'Tamil', 'Hindi', 'English', 'Telugu', 'Kannada', 'Bengali'];
-const GENRE_OPTIONS = ['indie', 'soul', 'romantic', 'ambient', 'folk', 'classical', 'pop', 'rock', 'electronic', 'devotional'];
-const VIBE_OPTIONS = ['urban', 'contemplative', 'modern', 'dreamy', 'nostalgic', 'energetic', 'melancholic', 'peaceful', 'intimate', 'mystical'];
-const VISUAL_MOOD_OPTIONS = ['city-night', 'warm-tones', 'moody', 'peaceful', 'blue-tones', 'indie-aesthetic', 'vast', 'water', 'sunset', 'nature'];
-const EMOTIONAL_OPTIONS = ['longing', 'introspective', 'tender', 'peaceful', 'joyful', 'spiritual', 'melancholic', 'hopeful', 'romantic', 'nostalgic'];
+const GENRE_OPTIONS: Record<string, string> = {
+  'indie': '🎸 indie',
+  'soul': '🎷 soul',
+  'romantic': '💕 romantic',
+  'ambient': '🌫️ ambient',
+  'folk': '🪕 folk',
+  'classical': '🎻 classical',
+  'pop': '🎤 pop',
+  'rock': '🤘 rock',
+  'electronic': '🎛️ electronic',
+  'devotional': '🕯️ devotional',
+};
+const VIBE_OPTIONS: Record<string, string> = {
+  'urban': '🏙️ urban',
+  'contemplative': '🤔 contemplative',
+  'modern': '✨ modern',
+  'dreamy': '💭 dreamy',
+  'nostalgic': '📷 nostalgic',
+  'energetic': '⚡ energetic',
+  'melancholic': '🌧️ melancholic',
+  'peaceful': '🕊️ peaceful',
+  'intimate': '🕯️ intimate',
+  'mystical': '🔮 mystical',
+};
+const VISUAL_MOOD_OPTIONS: Record<string, string> = {
+  'city-night': '🌃 city-night',
+  'warm-tones': '🌅 warm-tones',
+  'moody': '🌑 moody',
+  'peaceful': '☁️ peaceful',
+  'blue-tones': '💙 blue-tones',
+  'indie-aesthetic': '📸 indie-aesthetic',
+  'vast': '🏔️ vast',
+  'water': '🌊 water',
+  'sunset': '🌇 sunset',
+  'nature': '🌿 nature',
+};
+const EMOTIONAL_OPTIONS: Record<string, string> = {
+  'longing': '💫 longing',
+  'introspective': '🪞 introspective',
+  'tender': '🤲 tender',
+  'peaceful': '😌 peaceful',
+  'joyful': '😄 joyful',
+  'spiritual': '🙏 spiritual',
+  'melancholic': '😢 melancholic',
+  'hopeful': '🌱 hopeful',
+  'romantic': '❤️ romantic',
+  'nostalgic': '⏳ nostalgic',
+};
 
 export default function AdminPage() {
   const [activeTab, setActiveTab] = useState<'add' | 'view'>('add');
@@ -24,13 +68,12 @@ export default function AdminPage() {
   const [vibeTags, setVibeTags] = useState<string[]>([]);
   const [visualMoods, setVisualMoods] = useState<string[]>([]);
   const [emotionalKeywords, setEmotionalKeywords] = useState<string[]>([]);
-  const [isIndie, setIsIndie] = useState(false);
 
   // View songs states
   const [existingSongs, setExistingSongs] = useState<any[]>([]);
   const [filteredSongs, setFilteredSongs] = useState<any[]>([]);
-  const [filterLanguage, setFilterLanguage] = useState('');
-  const [filterGenre, setFilterGenre] = useState('');
+  const [filterLanguages, setFilterLanguages] = useState<string[]>([]);
+  const [filterGenres, setFilterGenres] = useState<string[]>([]);
   const [searchFilter, setSearchFilter] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
@@ -41,7 +84,6 @@ export default function AdminPage() {
   const [editVibeTags, setEditVibeTags] = useState<string[]>([]);
   const [editVisualMoods, setEditVisualMoods] = useState<string[]>([]);
   const [editEmotionalKeywords, setEditEmotionalKeywords] = useState<string[]>([]);
-  const [editIsIndie, setEditIsIndie] = useState(false);
 
   useEffect(() => {
     if (activeTab === 'view') {
@@ -51,7 +93,7 @@ export default function AdminPage() {
 
   useEffect(() => {
     applyFilters();
-  }, [existingSongs, filterLanguage, filterGenre, searchFilter]);
+  }, [existingSongs, filterLanguages, filterGenres, searchFilter]);
 
   const loadExistingSongs = async () => {
     setIsLoading(true);
@@ -79,14 +121,16 @@ export default function AdminPage() {
       );
     }
 
-    // Language filter
-    if (filterLanguage) {
-      filtered = filtered.filter(s => s.language === filterLanguage);
+    // Language filter (multi-select)
+    if (filterLanguages.length > 0) {
+      filtered = filtered.filter(s => filterLanguages.includes(s.language));
     }
 
-    // Genre filter
-    if (filterGenre) {
-      filtered = filtered.filter(s => s.genre_tags?.includes(filterGenre));
+    // Genre filter (multi-select)
+    if (filterGenres.length > 0) {
+      filtered = filtered.filter(s =>
+        filterGenres.some(g => s.genre_tags?.includes(g))
+      );
     }
 
     setFilteredSongs(filtered);
@@ -121,7 +165,6 @@ export default function AdminPage() {
     setVibeTags([]);
     setVisualMoods([]);
     setEmotionalKeywords([]);
-    setIsIndie(false);
   };
 
   const toggleTag = (tag: string, currentTags: string[], setter: (tags: string[]) => void) => {
@@ -134,6 +177,9 @@ export default function AdminPage() {
 
   const addToCuratedDatabase = async () => {
     if (!selectedTrack || !language) return;
+
+    // Determine is_indie from genre_tags
+    const isIndie = genreTags.includes('indie');
 
     const curatedSong = {
       spotify_id: selectedTrack.id,
@@ -158,7 +204,7 @@ export default function AdminPage() {
 
       const data = await res.json();
       if (data.success) {
-        alert('✅ Song added to curated database!');
+        alert('Song added to curated database!');
         // Reset form
         setSelectedTrack(null);
         setSearchResults([]);
@@ -168,9 +214,8 @@ export default function AdminPage() {
         setVibeTags([]);
         setVisualMoods([]);
         setEmotionalKeywords([]);
-        setIsIndie(false);
       } else {
-        alert('❌ Failed to add song: ' + data.error);
+        alert('Failed to add song: ' + data.error);
       }
     } catch (error) {
       console.error('Add failed:', error);
@@ -185,7 +230,6 @@ export default function AdminPage() {
     setEditVibeTags(song.vibe_tags || []);
     setEditVisualMoods(song.visual_moods || []);
     setEditEmotionalKeywords(song.emotional_keywords || []);
-    setEditIsIndie(song.is_indie || false);
   };
 
   const cancelEdit = () => {
@@ -202,7 +246,7 @@ export default function AdminPage() {
       vibe_tags: editVibeTags,
       visual_moods: editVisualMoods,
       emotional_keywords: editEmotionalKeywords,
-      is_indie: editIsIndie,
+      is_indie: editGenreTags.includes('indie'),
     };
 
     try {
@@ -214,11 +258,11 @@ export default function AdminPage() {
 
       const data = await res.json();
       if (data.success) {
-        alert('✅ Song updated successfully!');
+        alert('Song updated successfully!');
         setEditingSong(null);
         loadExistingSongs();
       } else {
-        alert('❌ Failed to update song: ' + data.error);
+        alert('Failed to update song: ' + data.error);
       }
     } catch (error) {
       console.error('Update failed:', error);
@@ -240,15 +284,102 @@ export default function AdminPage() {
 
       const data = await res.json();
       if (data.success) {
-        alert('✅ Song deleted successfully!');
+        alert('Song deleted successfully!');
         loadExistingSongs();
       } else {
-        alert('❌ Failed to delete song: ' + data.error);
+        alert('Failed to delete song: ' + data.error);
       }
     } catch (error) {
       console.error('Delete failed:', error);
       alert('Failed to delete song');
     }
+  };
+
+  // Render a checkbox grid for tag options (with emojis)
+  const renderTagGrid = (
+    options: Record<string, string>,
+    selected: string[],
+    setter: (tags: string[]) => void,
+    cols: string = 'grid-cols-2 md:grid-cols-3'
+  ) => (
+    <div className={`grid ${cols} gap-2`}>
+      {Object.entries(options).map(([key, label]) => (
+        <label
+          key={key}
+          className={`flex items-center gap-2 p-2 border rounded cursor-pointer transition-colors ${
+            selected.includes(key) ? 'bg-blue-50 border-blue-300' : 'hover:bg-gray-50'
+          }`}
+        >
+          <input
+            type="checkbox"
+            checked={selected.includes(key)}
+            onChange={() => toggleTag(key, selected, setter)}
+            className="rounded"
+          />
+          <span className="text-sm">{label}</span>
+        </label>
+      ))}
+    </div>
+  );
+
+  // Render a compact checkbox grid for edit mode
+  const renderEditTagGrid = (
+    options: Record<string, string>,
+    selected: string[],
+    setter: (tags: string[]) => void
+  ) => (
+    <div className="grid grid-cols-3 gap-2">
+      {Object.entries(options).map(([key, label]) => (
+        <label key={key} className="flex items-center gap-1 text-sm">
+          <input
+            type="checkbox"
+            checked={selected.includes(key)}
+            onChange={() => toggleTag(key, selected, setter)}
+            className="rounded"
+          />
+          <span>{label}</span>
+        </label>
+      ))}
+    </div>
+  );
+
+  // Multi-select filter component for View Songs
+  const renderMultiSelectFilter = (
+    label: string,
+    options: string[] | Record<string, string>,
+    selected: string[],
+    setter: (val: string[]) => void
+  ) => {
+    const entries = Array.isArray(options)
+      ? options.map(o => [o, o] as [string, string])
+      : Object.entries(options);
+
+    return (
+      <div>
+        <label className="block text-sm font-medium mb-1">{label}</label>
+        <div className="flex flex-wrap gap-2">
+          {entries.map(([key, display]) => (
+            <button
+              key={key}
+              onClick={() => {
+                if (selected.includes(key)) {
+                  setter(selected.filter(s => s !== key));
+                } else {
+                  setter([...selected, key]);
+                }
+              }}
+              className={`px-3 py-1.5 text-sm rounded-full border transition-colors ${
+                selected.includes(key)
+                  ? 'bg-blue-600 text-white border-blue-600'
+                  : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100'
+              }`}
+            >
+              {display}
+            </button>
+          ))}
+        </div>
+      </div>
+    );
   };
 
   return (
@@ -354,87 +485,28 @@ export default function AdminPage() {
                     </select>
                   </div>
 
-                  {/* Genre Tags - Multi-select with checkboxes */}
+                  {/* Genre Tags - Multi-select with checkboxes + emojis */}
                   <div>
                     <label className="block text-sm font-medium mb-2">Genre Tags</label>
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                      {GENRE_OPTIONS.map(genre => (
-                        <label key={genre} className="flex items-center gap-2 p-2 border rounded hover:bg-gray-50 cursor-pointer">
-                          <input
-                            type="checkbox"
-                            checked={genreTags.includes(genre)}
-                            onChange={() => toggleTag(genre, genreTags, setGenreTags)}
-                            className="rounded"
-                          />
-                          <span className="text-sm">{genre}</span>
-                        </label>
-                      ))}
-                    </div>
+                    {renderTagGrid(GENRE_OPTIONS, genreTags, setGenreTags)}
                   </div>
 
                   {/* Vibe Tags */}
                   <div>
                     <label className="block text-sm font-medium mb-2">Vibe Tags</label>
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                      {VIBE_OPTIONS.map(vibe => (
-                        <label key={vibe} className="flex items-center gap-2 p-2 border rounded hover:bg-gray-50 cursor-pointer">
-                          <input
-                            type="checkbox"
-                            checked={vibeTags.includes(vibe)}
-                            onChange={() => toggleTag(vibe, vibeTags, setVibeTags)}
-                            className="rounded"
-                          />
-                          <span className="text-sm">{vibe}</span>
-                        </label>
-                      ))}
-                    </div>
+                    {renderTagGrid(VIBE_OPTIONS, vibeTags, setVibeTags)}
                   </div>
 
                   {/* Visual Moods */}
                   <div>
                     <label className="block text-sm font-medium mb-2">Visual Moods</label>
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                      {VISUAL_MOOD_OPTIONS.map(mood => (
-                        <label key={mood} className="flex items-center gap-2 p-2 border rounded hover:bg-gray-50 cursor-pointer">
-                          <input
-                            type="checkbox"
-                            checked={visualMoods.includes(mood)}
-                            onChange={() => toggleTag(mood, visualMoods, setVisualMoods)}
-                            className="rounded"
-                          />
-                          <span className="text-sm">{mood}</span>
-                        </label>
-                      ))}
-                    </div>
+                    {renderTagGrid(VISUAL_MOOD_OPTIONS, visualMoods, setVisualMoods)}
                   </div>
 
                   {/* Emotional Keywords */}
                   <div>
                     <label className="block text-sm font-medium mb-2">Emotional Keywords</label>
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                      {EMOTIONAL_OPTIONS.map(emotion => (
-                        <label key={emotion} className="flex items-center gap-2 p-2 border rounded hover:bg-gray-50 cursor-pointer">
-                          <input
-                            type="checkbox"
-                            checked={emotionalKeywords.includes(emotion)}
-                            onChange={() => toggleTag(emotion, emotionalKeywords, setEmotionalKeywords)}
-                            className="rounded"
-                          />
-                          <span className="text-sm">{emotion}</span>
-                        </label>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="flex items-center p-3 bg-gray-50 rounded">
-                    <input
-                      type="checkbox"
-                      checked={isIndie}
-                      onChange={(e) => setIsIndie(e.target.checked)}
-                      id="is-indie"
-                      className="mr-3"
-                    />
-                    <label htmlFor="is-indie" className="text-sm font-medium">Is Indie</label>
+                    {renderTagGrid(EMOTIONAL_OPTIONS, emotionalKeywords, setEmotionalKeywords)}
                   </div>
 
                   <button
@@ -442,7 +514,7 @@ export default function AdminPage() {
                     disabled={!language.trim()}
                     className="w-full px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed font-medium"
                   >
-                    ✅ Add to Curated Database
+                    Add to Curated Database
                   </button>
                 </div>
               </div>
@@ -477,44 +549,20 @@ export default function AdminPage() {
                 />
               </div>
 
-              {/* Filters */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium mb-1">Filter by Language</label>
-                  <select
-                    value={filterLanguage}
-                    onChange={(e) => setFilterLanguage(e.target.value)}
-                    className="w-full px-3 py-2 border rounded-lg"
-                  >
-                    <option value="">All Languages</option>
-                    {LANGUAGES.map(lang => (
-                      <option key={lang} value={lang}>{lang}</option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-1">Filter by Genre</label>
-                  <select
-                    value={filterGenre}
-                    onChange={(e) => setFilterGenre(e.target.value)}
-                    className="w-full px-3 py-2 border rounded-lg"
-                  >
-                    <option value="">All Genres</option>
-                    {GENRE_OPTIONS.map(genre => (
-                      <option key={genre} value={genre}>{genre}</option>
-                    ))}
-                  </select>
-                </div>
-              </div>
+              {/* Multi-select Language Filter */}
+              {renderMultiSelectFilter('Filter by Language', LANGUAGES, filterLanguages, setFilterLanguages)}
+
+              {/* Multi-select Genre Filter */}
+              {renderMultiSelectFilter('Filter by Genre', GENRE_OPTIONS, filterGenres, setFilterGenres)}
 
               {/* Clear Filters Button */}
-              {(searchFilter || filterLanguage || filterGenre) && (
+              {(searchFilter || filterLanguages.length > 0 || filterGenres.length > 0) && (
                 <div className="flex justify-end">
                   <button
                     onClick={() => {
                       setSearchFilter('');
-                      setFilterLanguage('');
-                      setFilterGenre('');
+                      setFilterLanguages([]);
+                      setFilterGenres([]);
                     }}
                     className="px-4 py-2 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200"
                   >
@@ -572,84 +620,25 @@ export default function AdminPage() {
                         {/* Edit Genre Tags */}
                         <div>
                           <label className="block text-sm font-medium mb-2">Genre Tags</label>
-                          <div className="grid grid-cols-3 gap-2">
-                            {GENRE_OPTIONS.map(genre => (
-                              <label key={genre} className="flex items-center gap-1 text-sm">
-                                <input
-                                  type="checkbox"
-                                  checked={editGenreTags.includes(genre)}
-                                  onChange={() => toggleTag(genre, editGenreTags, setEditGenreTags)}
-                                  className="rounded"
-                                />
-                                <span>{genre}</span>
-                              </label>
-                            ))}
-                          </div>
+                          {renderEditTagGrid(GENRE_OPTIONS, editGenreTags, setEditGenreTags)}
                         </div>
 
                         {/* Edit Vibe Tags */}
                         <div>
                           <label className="block text-sm font-medium mb-2">Vibe Tags</label>
-                          <div className="grid grid-cols-3 gap-2">
-                            {VIBE_OPTIONS.map(vibe => (
-                              <label key={vibe} className="flex items-center gap-1 text-sm">
-                                <input
-                                  type="checkbox"
-                                  checked={editVibeTags.includes(vibe)}
-                                  onChange={() => toggleTag(vibe, editVibeTags, setEditVibeTags)}
-                                  className="rounded"
-                                />
-                                <span>{vibe}</span>
-                              </label>
-                            ))}
-                          </div>
+                          {renderEditTagGrid(VIBE_OPTIONS, editVibeTags, setEditVibeTags)}
                         </div>
 
                         {/* Edit Visual Moods */}
                         <div>
                           <label className="block text-sm font-medium mb-2">Visual Moods</label>
-                          <div className="grid grid-cols-3 gap-2">
-                            {VISUAL_MOOD_OPTIONS.map(mood => (
-                              <label key={mood} className="flex items-center gap-1 text-sm">
-                                <input
-                                  type="checkbox"
-                                  checked={editVisualMoods.includes(mood)}
-                                  onChange={() => toggleTag(mood, editVisualMoods, setEditVisualMoods)}
-                                  className="rounded"
-                                />
-                                <span>{mood}</span>
-                              </label>
-                            ))}
-                          </div>
+                          {renderEditTagGrid(VISUAL_MOOD_OPTIONS, editVisualMoods, setEditVisualMoods)}
                         </div>
 
                         {/* Edit Emotional Keywords */}
                         <div>
                           <label className="block text-sm font-medium mb-2">Emotional Keywords</label>
-                          <div className="grid grid-cols-3 gap-2">
-                            {EMOTIONAL_OPTIONS.map(emotion => (
-                              <label key={emotion} className="flex items-center gap-1 text-sm">
-                                <input
-                                  type="checkbox"
-                                  checked={editEmotionalKeywords.includes(emotion)}
-                                  onChange={() => toggleTag(emotion, editEmotionalKeywords, setEditEmotionalKeywords)}
-                                  className="rounded"
-                                />
-                                <span>{emotion}</span>
-                              </label>
-                            ))}
-                          </div>
-                        </div>
-
-                        <div className="flex items-center">
-                          <input
-                            type="checkbox"
-                            checked={editIsIndie}
-                            onChange={(e) => setEditIsIndie(e.target.checked)}
-                            id={`edit-indie-${song.id}`}
-                            className="mr-2"
-                          />
-                          <label htmlFor={`edit-indie-${song.id}`} className="text-sm font-medium">Is Indie</label>
+                          {renderEditTagGrid(EMOTIONAL_OPTIONS, editEmotionalKeywords, setEditEmotionalKeywords)}
                         </div>
                       </div>
                     ) : (

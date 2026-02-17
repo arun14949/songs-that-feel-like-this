@@ -10,6 +10,26 @@ const systemPrompt = fs.readFileSync(
   'utf-8'
 );
 
+// Load curated song database (cached at module level)
+let cachedCuratedSongList: string | null = null;
+
+function getCuratedSongList(): string {
+  if (cachedCuratedSongList) return cachedCuratedSongList;
+
+  const dbPath = path.join(process.cwd(), 'data', 'songs', 'curated-indian-music.json');
+  const raw = fs.readFileSync(dbPath, 'utf-8');
+  const db = JSON.parse(raw);
+
+  // Build a compact song catalog for the prompt
+  const songs = db.songs.map((s: any) =>
+    `- "${s.title}" by ${s.artist} (${s.language}, ${s.year}) [${s.genre_tags.join(', ')}] vibes: ${s.vibe_tags.join(', ')} | emotions: ${s.emotional_keywords.join(', ')} | visual: ${s.visual_moods.join(', ')}`
+  );
+
+  const result = songs.join('\n');
+  cachedCuratedSongList = result;
+  return result;
+}
+
 // Configure route for optimized execution and dynamic rendering
 export const maxDuration = 30; // Reduced to 30 seconds for faster model (gpt-4o-mini)
 export const dynamic = 'force-dynamic'; // Always run dynamically, never cache
@@ -37,7 +57,23 @@ export async function POST(request: NextRequest) {
     console.log('[Analyze API] Calling OpenAI API with gpt-4o-mini (optimized for speed)...');
     const startTime = Date.now();
 
-    const userPrompt = 'Analyze this image and recommend 4-5 Indian songs that match its mood and context. Follow the v2.0 recommendation rules including: (1) Texture matching (grain of photo → grain of production), (2) Blacklist compliance (38 overused songs forbidden), (3) Popularity spread (max 1 mainstream, min 2 deep cuts), (4) Era spread (min 2 decades), (5) No repeated artists, (6) Visual connection for each song (not generic mood matching). Return JSON with: mood (string), songs (array of 4-5 objects with title, artist, year, category, connection_to_image). IMPORTANT: You MUST return a "songs" array with 4-5 song objects.';
+    const songCatalog = getCuratedSongList();
+    const userPrompt = `Analyze this image and recommend 4-5 songs that match its mood and context.
+
+**CRITICAL: You MUST ONLY recommend songs from the curated catalog below. Do NOT suggest any songs outside this list.**
+
+## CURATED SONG CATALOG (pick ONLY from these):
+${songCatalog}
+
+## RULES:
+1. Pick 4-5 songs from the catalog above that best match the image mood/texture
+2. Match texture of image to texture of sound (grain of photo → grain of production)
+3. No repeated artists
+4. Era spread: span at least 2 decades
+5. Each song needs a SPECIFIC visual connection to the image
+6. Use the EXACT title and artist as listed in the catalog
+
+Return JSON with: mood (string), songs (array of 4-5 objects with title, artist, year, category, connection_to_image). IMPORTANT: You MUST return a "songs" array with 4-5 song objects. Every song MUST be from the catalog above.`;
 
     const response = await openai.chat.completions.create({
       model: 'gpt-4o-mini', // Faster model: 60% faster, 15x cheaper
