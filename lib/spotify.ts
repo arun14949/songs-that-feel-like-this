@@ -78,7 +78,11 @@ export async function searchTrack(title: string, artist: string): Promise<Spotif
 
       // If no artist match, use first result
       if (!bestMatch) {
+        // Use first result as fallback, but warn if it's not a good match
         bestMatch = tracks[0];
+        console.warn(`⚠️  No exact match for "${title}" by ${artist}. Using fallback: "${bestMatch.name}" by ${bestMatch.artists[0].name}`);
+      } else {
+        console.log(`✅ Found match: "${title}" by ${artist} → "${bestMatch.name}" by ${bestMatch.artists[0].name}`);
       }
 
       return {
