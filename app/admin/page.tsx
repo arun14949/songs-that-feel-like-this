@@ -31,6 +31,7 @@ export default function AdminPage() {
   const [filteredSongs, setFilteredSongs] = useState<any[]>([]);
   const [filterLanguage, setFilterLanguage] = useState('');
   const [filterGenre, setFilterGenre] = useState('');
+  const [searchFilter, setSearchFilter] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
   // Edit mode states
@@ -50,7 +51,7 @@ export default function AdminPage() {
 
   useEffect(() => {
     applyFilters();
-  }, [existingSongs, filterLanguage, filterGenre]);
+  }, [existingSongs, filterLanguage, filterGenre, searchFilter]);
 
   const loadExistingSongs = async () => {
     setIsLoading(true);
@@ -68,10 +69,22 @@ export default function AdminPage() {
   const applyFilters = () => {
     let filtered = existingSongs;
 
+    // Search filter (search in title, artist, album)
+    if (searchFilter) {
+      const searchLower = searchFilter.toLowerCase();
+      filtered = filtered.filter(s =>
+        s.title?.toLowerCase().includes(searchLower) ||
+        s.artist?.toLowerCase().includes(searchLower) ||
+        s.album?.toLowerCase().includes(searchLower)
+      );
+    }
+
+    // Language filter
     if (filterLanguage) {
       filtered = filtered.filter(s => s.language === filterLanguage);
     }
 
+    // Genre filter
     if (filterGenre) {
       filtered = filtered.filter(s => s.genre_tags?.includes(filterGenre));
     }
@@ -450,34 +463,65 @@ export default function AdminPage() {
               </button>
             </div>
 
-            {/* Filters */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            {/* Search and Filters */}
+            <div className="space-y-4 mb-6">
+              {/* Search Bar */}
               <div>
-                <label className="block text-sm font-medium mb-1">Filter by Language</label>
-                <select
-                  value={filterLanguage}
-                  onChange={(e) => setFilterLanguage(e.target.value)}
-                  className="w-full px-3 py-2 border rounded-lg"
-                >
-                  <option value="">All Languages</option>
-                  {LANGUAGES.map(lang => (
-                    <option key={lang} value={lang}>{lang}</option>
-                  ))}
-                </select>
+                <label className="block text-sm font-medium mb-1">Search Songs</label>
+                <input
+                  type="text"
+                  value={searchFilter}
+                  onChange={(e) => setSearchFilter(e.target.value)}
+                  placeholder="Search by title, artist, or album..."
+                  className="w-full px-4 py-2 border rounded-lg"
+                />
               </div>
-              <div>
-                <label className="block text-sm font-medium mb-1">Filter by Genre</label>
-                <select
-                  value={filterGenre}
-                  onChange={(e) => setFilterGenre(e.target.value)}
-                  className="w-full px-3 py-2 border rounded-lg"
-                >
-                  <option value="">All Genres</option>
-                  {GENRE_OPTIONS.map(genre => (
-                    <option key={genre} value={genre}>{genre}</option>
-                  ))}
-                </select>
+
+              {/* Filters */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium mb-1">Filter by Language</label>
+                  <select
+                    value={filterLanguage}
+                    onChange={(e) => setFilterLanguage(e.target.value)}
+                    className="w-full px-3 py-2 border rounded-lg"
+                  >
+                    <option value="">All Languages</option>
+                    {LANGUAGES.map(lang => (
+                      <option key={lang} value={lang}>{lang}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">Filter by Genre</label>
+                  <select
+                    value={filterGenre}
+                    onChange={(e) => setFilterGenre(e.target.value)}
+                    className="w-full px-3 py-2 border rounded-lg"
+                  >
+                    <option value="">All Genres</option>
+                    {GENRE_OPTIONS.map(genre => (
+                      <option key={genre} value={genre}>{genre}</option>
+                    ))}
+                  </select>
+                </div>
               </div>
+
+              {/* Clear Filters Button */}
+              {(searchFilter || filterLanguage || filterGenre) && (
+                <div className="flex justify-end">
+                  <button
+                    onClick={() => {
+                      setSearchFilter('');
+                      setFilterLanguage('');
+                      setFilterGenre('');
+                    }}
+                    className="px-4 py-2 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200"
+                  >
+                    Clear All Filters
+                  </button>
+                </div>
+              )}
             </div>
 
             {/* Songs List */}
