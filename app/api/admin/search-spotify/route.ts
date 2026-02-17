@@ -7,6 +7,10 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 
+// Force Node.js runtime for Buffer support
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+
 const SPOTIFY_CLIENT_ID = process.env.SPOTIFY_CLIENT_ID;
 const SPOTIFY_CLIENT_SECRET = process.env.SPOTIFY_CLIENT_SECRET;
 
