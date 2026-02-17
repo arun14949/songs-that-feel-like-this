@@ -1,7 +1,7 @@
 import { nanoid } from 'nanoid';
 import { kv } from '@vercel/kv';
 import type { Recommendation } from './types';
-import Redis from 'ioredis';
+import { createClient } from 'redis';
 
 // Use Vercel KV for persistent storage
 // Fallback to in-memory if KV is not configured (for local development)
@@ -12,33 +12,34 @@ const hasVercelKV = !!(process.env.KV_REST_API_URL || process.env.KV_URL);
 const hasRedisURL = !!process.env.REDIS_URL;
 const useKV = hasVercelKV || hasRedisURL;
 
-// Initialize Redis client if using REDIS_URL
-let redisClient: Redis | null = null;
+// Initialize Redis client if using REDIS_URL (serverless-friendly)
+let redisClient: ReturnType<typeof createClient> | null = null;
 if (hasRedisURL && !hasVercelKV) {
   try {
-    redisClient = new Redis(process.env.REDIS_URL!, {
-      maxRetriesPerRequest: 3,
-      enableOfflineQueue: false,
-      connectTimeout: 10000, // 10 second connection timeout
-      retryStrategy: (times) => {
-        if (times > 3) {
-          console.error('[Redis] Max retry attempts reached');
-          return null; // Stop retrying
+    redisClient = createClient({
+      url: process.env.REDIS_URL!,
+      socket: {
+        connectTimeout: 10000, // 10 second timeout
+        reconnectStrategy: (retries) => {
+          if (retries > 3) {
+            console.error('[Redis] Max retry attempts reached');
+            return false; // Stop retrying
+          }
+          return Math.min(retries * 200, 2000); // Exponential backoff
         }
-        return Math.min(times * 200, 2000); // Exponential backoff
-      },
+      }
     });
 
-    // Add error handler
+    // Error handler
     redisClient.on('error', (err) => {
-      console.error('[Redis] Connection error:', err.message);
+      console.error('[Redis] Error:', err.message);
     });
 
     redisClient.on('connect', () => {
-      console.log('✅ Redis connected successfully');
+      console.log('✅ Redis connected');
     });
 
-    console.log('✅ Redis detected - using persistent storage (ioredis)');
+    console.log('✅ Redis detected - using persistent storage');
   } catch (error) {
     console.error('Failed to initialize Redis client:', error);
     redisClient = null;
@@ -67,20 +68,22 @@ export async function saveRecommendation(
       const key = `recommendation:${id}`;
       const expiration = 60 * 60 * 24 * 7; // 7 days
 
-      // Use ioredis if REDIS_URL is set and Vercel KV is not available
+      // Use Redis client if REDIS_URL is set and Vercel KV is not available
       if (redisClient) {
-        // Check if Redis is connected
-        if (redisClient.status !== 'ready' && redisClient.status !== 'connecting') {
-          console.warn(`[Redis] Client not ready (status: ${redisClient.status}), falling back to in-memory`);
-          recommendations.set(id, recommendation);
-        } else {
-          try {
-            await redisClient.setex(key, expiration, JSON.stringify(recommendation));
-            console.log(`✅ Saved recommendation ${id} to Redis (ioredis)`);
-          } catch (redisError: any) {
-            console.error(`[Redis] Save error: ${redisError.message}, falling back to in-memory`);
-            recommendations.set(id, recommendation);
+        try {
+          // Connect if not already connected (serverless-friendly)
+          if (!redisClient.isOpen) {
+            await redisClient.connect();
           }
+
+          await redisClient.setEx(key, expiration, JSON.stringify(recommendation));
+          console.log(`✅ Saved recommendation ${id} to Redis`);
+
+          // Disconnect after operation (serverless best practice)
+          await redisClient.disconnect();
+        } catch (redisError: any) {
+          console.error(`[Redis] Save error: ${redisError.message}, falling back to in-memory`);
+          recommendations.set(id, recommendation);
         }
       } else {
         // Use Vercel KV REST API
@@ -108,26 +111,28 @@ export async function getRecommendation(
       const key = `recommendation:${id}`;
       let recommendation: Recommendation | null = null;
 
-      // Use ioredis if REDIS_URL is set and Vercel KV is not available
+      // Use Redis client if REDIS_URL is set and Vercel KV is not available
       if (redisClient) {
-        // Check if Redis is connected
-        if (redisClient.status !== 'ready' && redisClient.status !== 'connecting') {
-          console.warn(`[Redis] Client not ready (status: ${redisClient.status}), checking in-memory`);
-          recommendation = recommendations.get(id) || null;
-        } else {
-          try {
-            const data = await redisClient.get(key);
-            if (data) {
-              recommendation = JSON.parse(data);
-              console.log(`✅ Retrieved recommendation ${id} from Redis (ioredis)`);
-            } else {
-              console.log(`Recommendation ${id} not found in Redis, checking in-memory fallback`);
-              recommendation = recommendations.get(id) || null;
-            }
-          } catch (redisError: any) {
-            console.error(`[Redis] Get error: ${redisError.message}, checking in-memory`);
+        try {
+          // Connect if not already connected (serverless-friendly)
+          if (!redisClient.isOpen) {
+            await redisClient.connect();
+          }
+
+          const data = await redisClient.get(key);
+          if (data) {
+            recommendation = JSON.parse(data);
+            console.log(`✅ Retrieved recommendation ${id} from Redis`);
+          } else {
+            console.log(`Recommendation ${id} not found in Redis, checking in-memory fallback`);
             recommendation = recommendations.get(id) || null;
           }
+
+          // Disconnect after operation (serverless best practice)
+          await redisClient.disconnect();
+        } catch (redisError: any) {
+          console.error(`[Redis] Get error: ${redisError.message}, checking in-memory`);
+          recommendation = recommendations.get(id) || null;
         }
       } else {
         // Use Vercel KV REST API

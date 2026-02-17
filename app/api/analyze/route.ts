@@ -10,8 +10,8 @@ const systemPrompt = fs.readFileSync(
   'utf-8'
 );
 
-// Configure route for longer execution and dynamic rendering
-export const maxDuration = 60; // Allow up to 60 seconds for OpenAI API calls
+// Configure route for optimized execution and dynamic rendering
+export const maxDuration = 30; // Reduced to 30 seconds for faster model (gpt-4o-mini)
 export const dynamic = 'force-dynamic'; // Always run dynamically, never cache
 
 export async function POST(request: NextRequest) {
@@ -34,99 +34,60 @@ export async function POST(request: NextRequest) {
     const imageSizeKB = (imageData.length * 0.75) / 1024;
     console.log(`[Analyze API] Received image: ${imageSizeKB.toFixed(0)}KB`);
 
-    console.log('[Analyze API] Calling OpenAI API...');
+    console.log('[Analyze API] Calling OpenAI API with gpt-4o-mini (optimized for speed)...');
     const startTime = Date.now();
 
-    // Retry logic: try up to 2 times with different approaches
-    let result: any = null;
-    let lastError: Error | null = null;
+    const userPrompt = 'Analyze this image and recommend 4-5 Indian songs that match its mood and context. Follow the v2.0 recommendation rules including: (1) Texture matching (grain of photo → grain of production), (2) Blacklist compliance (38 overused songs forbidden), (3) Popularity spread (max 1 mainstream, min 2 deep cuts), (4) Era spread (min 2 decades), (5) No repeated artists, (6) Visual connection for each song (not generic mood matching). Return JSON with: mood (string), songs (array of 4-5 objects with title, artist, year, category, connection_to_image). IMPORTANT: You MUST return a "songs" array with 4-5 song objects.';
 
-    for (let attempt = 1; attempt <= 2; attempt++) {
-      try {
-        console.log(`[Analyze API] Attempt ${attempt}/2`);
-
-        const userPrompt = attempt === 1
-          ? 'Analyze this image and recommend 4-5 Indian songs that match its mood and context. Follow the v2.0 recommendation rules including: (1) Texture matching (grain of photo → grain of production), (2) Blacklist compliance (38 overused songs forbidden), (3) Popularity spread (max 1 mainstream, min 2 deep cuts), (4) Era spread (min 2 decades), (5) No repeated artists, (6) Visual connection for each song (not generic mood matching). Return JSON with: mood (string), songs (array of 4-5 objects with title, artist, year, category, connection_to_image). IMPORTANT: You MUST return a "songs" array with 4-5 song objects.'
-          : 'Analyze this image and suggest 4 Indian songs. Return a JSON object with: "mood" (string describing the image mood), "songs" (array with exactly 4 song objects, each having: title, artist, year, category, connection_to_image). CRITICAL: The response MUST include a "songs" array.';
-
-        const response = await openai.chat.completions.create({
-          model: 'gpt-4o',
-          messages: [
+    const response = await openai.chat.completions.create({
+      model: 'gpt-4o-mini', // Faster model: 60% faster, 15x cheaper
+      messages: [
+        {
+          role: 'system',
+          content: systemPrompt, // Prompt caching will be handled by OpenAI automatically
+        },
+        {
+          role: 'user',
+          content: [
             {
-              role: 'system',
-              content: attempt === 1 ? systemPrompt : 'You are a music recommendation expert specializing in Indian music. Always return valid JSON with a "songs" array.',
+              type: 'text',
+              text: userPrompt,
             },
             {
-              role: 'user',
-              content: [
-                {
-                  type: 'text',
-                  text: userPrompt,
-                },
-                {
-                  type: 'image_url',
-                  image_url: {
-                    url: `data:image/jpeg;base64,${imageData}`,
-                  },
-                },
-              ],
+              type: 'image_url',
+              image_url: {
+                url: `data:image/jpeg;base64,${imageData}`,
+              },
             },
           ],
-          max_tokens: attempt === 1 ? 2000 : 1500,
-          response_format: { type: 'json_object' },
-        });
+        },
+      ],
+      max_tokens: 1000, // Reduced from 2000 (sufficient for 4-5 songs)
+      response_format: { type: 'json_object' },
+    });
 
-        const duration = Date.now() - startTime;
-        console.log(`[Analyze API] OpenAI responded in ${(duration / 1000).toFixed(1)}s`);
+    const duration = Date.now() - startTime;
+    console.log(`[Analyze API] ✅ OpenAI responded in ${(duration / 1000).toFixed(1)}s`);
 
-        const content = response.choices[0]?.message?.content || '{}';
-        console.log('[Analyze API] Raw OpenAI response:', content.substring(0, 300) + '...');
+    const content = response.choices[0]?.message?.content || '{}';
+    console.log('[Analyze API] Raw OpenAI response:', content.substring(0, 300) + '...');
 
-        try {
-          result = JSON.parse(content);
+    let result: any;
+    try {
+      result = JSON.parse(content);
 
-          // Validate that we have a songs array
-          if (result.songs && Array.isArray(result.songs) && result.songs.length >= 3) {
-            console.log(`[Analyze API] Success! Got ${result.songs.length} songs on attempt ${attempt}`);
-            break; // Success, exit retry loop
-          } else {
-            console.error(`[Analyze API] Attempt ${attempt} failed: Invalid or missing songs array`);
-            console.error('[Analyze API] Response structure:', JSON.stringify(result, null, 2));
-            lastError = new Error(`Invalid response format from AI: missing or invalid songs array (attempt ${attempt})`);
-
-            // Continue to next attempt if available
-            if (attempt < 2) {
-              console.log('[Analyze API] Retrying with simpler prompt...');
-              await new Promise(resolve => setTimeout(resolve, 1000)); // Wait 1s before retry
-            }
-          }
-        } catch (parseError) {
-          console.error(`[Analyze API] Attempt ${attempt} failed to parse JSON:`, parseError);
-          console.error('[Analyze API] Content was:', content);
-          lastError = new Error('Invalid JSON response from AI');
-
-          // Continue to next attempt if available
-          if (attempt < 2) {
-            console.log('[Analyze API] Retrying with simpler prompt...');
-            await new Promise(resolve => setTimeout(resolve, 1000)); // Wait 1s before retry
-          }
-        }
-      } catch (apiError: any) {
-        console.error(`[Analyze API] Attempt ${attempt} API error:`, apiError);
-        lastError = apiError;
-
-        // Continue to next attempt if available
-        if (attempt < 2) {
-          console.log('[Analyze API] Retrying after API error...');
-          await new Promise(resolve => setTimeout(resolve, 1000)); // Wait 1s before retry
-        }
+      // Validate that we have a songs array
+      if (!result.songs || !Array.isArray(result.songs) || result.songs.length < 3) {
+        console.error('[Analyze API] Invalid or missing songs array');
+        console.error('[Analyze API] Response structure:', JSON.stringify(result, null, 2));
+        throw new Error('Invalid response format from AI: missing or invalid songs array');
       }
-    }
 
-    // If we still don't have a valid result after all attempts, throw error
-    if (!result || !result.songs || !Array.isArray(result.songs) || result.songs.length < 3) {
-      console.error('[Analyze API] All retry attempts failed');
-      throw lastError || new Error('Failed to get valid song recommendations from AI after 2 attempts');
+      console.log(`[Analyze API] ✅ Got ${result.songs.length} songs`);
+    } catch (parseError) {
+      console.error('[Analyze API] Failed to parse JSON:', parseError);
+      console.error('[Analyze API] Content was:', content);
+      throw new Error('Invalid JSON response from AI');
     }
 
     // At this point, we have a valid result with songs array (validated in retry loop)
