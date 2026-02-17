@@ -52,6 +52,10 @@ async function getSpotifyAccessToken(): Promise<string> {
   spotifyAccessToken = data.access_token;
   tokenExpiresAt = Date.now() + (data.expires_in * 1000) - 60000;
 
+  if (!spotifyAccessToken) {
+    throw new Error('Failed to obtain Spotify access token');
+  }
+
   return spotifyAccessToken;
 }
 
