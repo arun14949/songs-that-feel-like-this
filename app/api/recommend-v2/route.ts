@@ -57,7 +57,7 @@ export async function POST(request: NextRequest) {
 
     const candidates = await generateCandidates(analysis, {
       useCurated: true,
-      useSpotifySearch: true,
+      useSpotifySearch: false, // ONLY use curated database
       useGPT: false, // Disabled for now (can enable later)
     });
 

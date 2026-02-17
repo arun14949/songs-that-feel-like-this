@@ -33,6 +33,15 @@ export default function AdminPage() {
   const [filterGenre, setFilterGenre] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
+  // Edit mode states
+  const [editingSong, setEditingSong] = useState<any>(null);
+  const [editLanguage, setEditLanguage] = useState('');
+  const [editGenreTags, setEditGenreTags] = useState<string[]>([]);
+  const [editVibeTags, setEditVibeTags] = useState<string[]>([]);
+  const [editVisualMoods, setEditVisualMoods] = useState<string[]>([]);
+  const [editEmotionalKeywords, setEditEmotionalKeywords] = useState<string[]>([]);
+  const [editIsIndie, setEditIsIndie] = useState(false);
+
   useEffect(() => {
     if (activeTab === 'view') {
       loadExistingSongs();
@@ -153,6 +162,79 @@ export default function AdminPage() {
     } catch (error) {
       console.error('Add failed:', error);
       alert('Failed to add song');
+    }
+  };
+
+  const startEdit = (song: any) => {
+    setEditingSong(song);
+    setEditLanguage(song.language);
+    setEditGenreTags(song.genre_tags || []);
+    setEditVibeTags(song.vibe_tags || []);
+    setEditVisualMoods(song.visual_moods || []);
+    setEditEmotionalKeywords(song.emotional_keywords || []);
+    setEditIsIndie(song.is_indie || false);
+  };
+
+  const cancelEdit = () => {
+    setEditingSong(null);
+  };
+
+  const saveEdit = async () => {
+    if (!editingSong) return;
+
+    const updatedSong = {
+      ...editingSong,
+      language: editLanguage,
+      genre_tags: editGenreTags,
+      vibe_tags: editVibeTags,
+      visual_moods: editVisualMoods,
+      emotional_keywords: editEmotionalKeywords,
+      is_indie: editIsIndie,
+    };
+
+    try {
+      const res = await fetch('/api/admin/update-song', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updatedSong),
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        alert('✅ Song updated successfully!');
+        setEditingSong(null);
+        loadExistingSongs();
+      } else {
+        alert('❌ Failed to update song: ' + data.error);
+      }
+    } catch (error) {
+      console.error('Update failed:', error);
+      alert('Failed to update song');
+    }
+  };
+
+  const deleteSong = async (songId: string) => {
+    if (!confirm('Are you sure you want to delete this song? This cannot be undone.')) {
+      return;
+    }
+
+    try {
+      const res = await fetch('/api/admin/delete-song', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ song_id: songId }),
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        alert('✅ Song deleted successfully!');
+        loadExistingSongs();
+      } else {
+        alert('❌ Failed to delete song: ' + data.error);
+      }
+    } catch (error) {
+      console.error('Delete failed:', error);
+      alert('Failed to delete song');
     }
   };
 
@@ -408,49 +490,186 @@ export default function AdminPage() {
                 </div>
                 {filteredSongs.map((song, index) => (
                   <div key={song.id || index} className="border rounded-lg p-4 hover:bg-gray-50">
-                    <div className="flex justify-between items-start mb-2">
-                      <div>
-                        <h3 className="font-semibold text-lg">{song.title}</h3>
-                        <p className="text-sm text-gray-600">{song.artist} • {song.year}</p>
-                      </div>
-                      <span className="px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full">
-                        {song.language}
-                      </span>
-                    </div>
+                    {editingSong?.id === song.id ? (
+                      // Edit Mode
+                      <div className="space-y-4">
+                        <div className="flex justify-between items-start mb-4">
+                          <h3 className="font-semibold text-lg">{song.title}</h3>
+                          <div className="flex gap-2">
+                            <button
+                              onClick={saveEdit}
+                              className="px-3 py-1 bg-green-600 text-white text-sm rounded hover:bg-green-700"
+                            >
+                              Save
+                            </button>
+                            <button
+                              onClick={cancelEdit}
+                              className="px-3 py-1 bg-gray-300 text-gray-700 text-sm rounded hover:bg-gray-400"
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                        </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm mt-3">
-                      {song.genre_tags?.length > 0 && (
+                        {/* Edit Language */}
                         <div>
-                          <span className="font-medium">Genres: </span>
-                          <span className="text-gray-600">{song.genre_tags.join(', ')}</span>
+                          <label className="block text-sm font-medium mb-1">Language</label>
+                          <select
+                            value={editLanguage}
+                            onChange={(e) => setEditLanguage(e.target.value)}
+                            className="w-full px-3 py-2 border rounded-lg text-sm"
+                          >
+                            {LANGUAGES.map(lang => (
+                              <option key={lang} value={lang}>{lang}</option>
+                            ))}
+                          </select>
                         </div>
-                      )}
-                      {song.vibe_tags?.length > 0 && (
-                        <div>
-                          <span className="font-medium">Vibes: </span>
-                          <span className="text-gray-600">{song.vibe_tags.join(', ')}</span>
-                        </div>
-                      )}
-                      {song.visual_moods?.length > 0 && (
-                        <div>
-                          <span className="font-medium">Moods: </span>
-                          <span className="text-gray-600">{song.visual_moods.join(', ')}</span>
-                        </div>
-                      )}
-                      {song.emotional_keywords?.length > 0 && (
-                        <div>
-                          <span className="font-medium">Emotions: </span>
-                          <span className="text-gray-600">{song.emotional_keywords.join(', ')}</span>
-                        </div>
-                      )}
-                    </div>
 
-                    {song.is_indie && (
-                      <div className="mt-2">
-                        <span className="px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded">
-                          Indie
-                        </span>
+                        {/* Edit Genre Tags */}
+                        <div>
+                          <label className="block text-sm font-medium mb-2">Genre Tags</label>
+                          <div className="grid grid-cols-3 gap-2">
+                            {GENRE_OPTIONS.map(genre => (
+                              <label key={genre} className="flex items-center gap-1 text-sm">
+                                <input
+                                  type="checkbox"
+                                  checked={editGenreTags.includes(genre)}
+                                  onChange={() => toggleTag(genre, editGenreTags, setEditGenreTags)}
+                                  className="rounded"
+                                />
+                                <span>{genre}</span>
+                              </label>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Edit Vibe Tags */}
+                        <div>
+                          <label className="block text-sm font-medium mb-2">Vibe Tags</label>
+                          <div className="grid grid-cols-3 gap-2">
+                            {VIBE_OPTIONS.map(vibe => (
+                              <label key={vibe} className="flex items-center gap-1 text-sm">
+                                <input
+                                  type="checkbox"
+                                  checked={editVibeTags.includes(vibe)}
+                                  onChange={() => toggleTag(vibe, editVibeTags, setEditVibeTags)}
+                                  className="rounded"
+                                />
+                                <span>{vibe}</span>
+                              </label>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Edit Visual Moods */}
+                        <div>
+                          <label className="block text-sm font-medium mb-2">Visual Moods</label>
+                          <div className="grid grid-cols-3 gap-2">
+                            {VISUAL_MOOD_OPTIONS.map(mood => (
+                              <label key={mood} className="flex items-center gap-1 text-sm">
+                                <input
+                                  type="checkbox"
+                                  checked={editVisualMoods.includes(mood)}
+                                  onChange={() => toggleTag(mood, editVisualMoods, setEditVisualMoods)}
+                                  className="rounded"
+                                />
+                                <span>{mood}</span>
+                              </label>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Edit Emotional Keywords */}
+                        <div>
+                          <label className="block text-sm font-medium mb-2">Emotional Keywords</label>
+                          <div className="grid grid-cols-3 gap-2">
+                            {EMOTIONAL_OPTIONS.map(emotion => (
+                              <label key={emotion} className="flex items-center gap-1 text-sm">
+                                <input
+                                  type="checkbox"
+                                  checked={editEmotionalKeywords.includes(emotion)}
+                                  onChange={() => toggleTag(emotion, editEmotionalKeywords, setEditEmotionalKeywords)}
+                                  className="rounded"
+                                />
+                                <span>{emotion}</span>
+                              </label>
+                            ))}
+                          </div>
+                        </div>
+
+                        <div className="flex items-center">
+                          <input
+                            type="checkbox"
+                            checked={editIsIndie}
+                            onChange={(e) => setEditIsIndie(e.target.checked)}
+                            id={`edit-indie-${song.id}`}
+                            className="mr-2"
+                          />
+                          <label htmlFor={`edit-indie-${song.id}`} className="text-sm font-medium">Is Indie</label>
+                        </div>
                       </div>
+                    ) : (
+                      // View Mode
+                      <>
+                        <div className="flex justify-between items-start mb-2">
+                          <div>
+                            <h3 className="font-semibold text-lg">{song.title}</h3>
+                            <p className="text-sm text-gray-600">{song.artist} • {song.year}</p>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full">
+                              {song.language}
+                            </span>
+                            <button
+                              onClick={() => startEdit(song)}
+                              className="px-3 py-1 bg-yellow-100 text-yellow-800 text-sm rounded hover:bg-yellow-200"
+                            >
+                              Edit
+                            </button>
+                            <button
+                              onClick={() => deleteSong(song.id)}
+                              className="px-3 py-1 bg-red-100 text-red-800 text-sm rounded hover:bg-red-200"
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm mt-3">
+                          {song.genre_tags?.length > 0 && (
+                            <div>
+                              <span className="font-medium">Genres: </span>
+                              <span className="text-gray-600">{song.genre_tags.join(', ')}</span>
+                            </div>
+                          )}
+                          {song.vibe_tags?.length > 0 && (
+                            <div>
+                              <span className="font-medium">Vibes: </span>
+                              <span className="text-gray-600">{song.vibe_tags.join(', ')}</span>
+                            </div>
+                          )}
+                          {song.visual_moods?.length > 0 && (
+                            <div>
+                              <span className="font-medium">Moods: </span>
+                              <span className="text-gray-600">{song.visual_moods.join(', ')}</span>
+                            </div>
+                          )}
+                          {song.emotional_keywords?.length > 0 && (
+                            <div>
+                              <span className="font-medium">Emotions: </span>
+                              <span className="text-gray-600">{song.emotional_keywords.join(', ')}</span>
+                            </div>
+                          )}
+                        </div>
+
+                        {song.is_indie && (
+                          <div className="mt-2">
+                            <span className="px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded">
+                              Indie
+                            </span>
+                          </div>
+                        )}
+                      </>
                     )}
                   </div>
                 ))}
