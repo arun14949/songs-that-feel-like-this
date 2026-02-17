@@ -35,7 +35,9 @@ async function getSpotifyToken(): Promise<string> {
   });
 
   if (!response.ok) {
-    throw new Error('Failed to get Spotify token');
+    const errorText = await response.text();
+    console.error('[Admin Search] Spotify auth error:', response.status, errorText);
+    throw new Error(`Failed to get Spotify token: ${response.status}`);
   }
 
   const data = await response.json();
@@ -60,7 +62,14 @@ export async function POST(request: NextRequest) {
     const token = await getSpotifyToken();
 
     // Search Spotify
-    const searchUrl = `https://api.spotify.com/v1/search?q=${encodeURIComponent(query)}&type=track&limit=20`;
+    const searchParams = new URLSearchParams({
+      q: query,
+      type: 'track',
+      market: 'IN', // Indian market
+    });
+    const searchUrl = `https://api.spotify.com/v1/search?${searchParams.toString()}`;
+
+    console.log('[Admin Search] Searching:', searchUrl);
 
     const response = await fetch(searchUrl, {
       headers: {
@@ -69,7 +78,9 @@ export async function POST(request: NextRequest) {
     });
 
     if (!response.ok) {
-      throw new Error('Spotify search failed');
+      const errorText = await response.text();
+      console.error('[Admin Search] Spotify API error:', response.status, errorText);
+      throw new Error(`Spotify search failed: ${response.status}`);
     }
 
     const data = await response.json();
