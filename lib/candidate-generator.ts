@@ -77,10 +77,11 @@ function loadCuratedDatabase(): CuratedDatabase {
   }
 
   const raw = fs.readFileSync(dbPath, 'utf-8');
-  curatedDatabase = JSON.parse(raw);
+  const db = JSON.parse(raw) as CuratedDatabase;
+  curatedDatabase = db;
 
-  console.log(`[Candidate Generator] Loaded ${curatedDatabase.songs.length} curated songs`);
-  return curatedDatabase;
+  console.log(`[Candidate Generator] Loaded ${db.songs.length} curated songs`);
+  return db;
 }
 
 /**
