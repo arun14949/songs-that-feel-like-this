@@ -86,11 +86,16 @@ export default function RecommendationPage({
         const { tracks } = await response.json();
         console.log(`Background loading: Found ${tracks.length} additional songs`);
 
-        // Update recommendation with new songs
-        setRecommendation(prev => prev ? {
-          ...prev,
-          songs: [...prev.songs, ...tracks]
-        } : null);
+        // Update recommendation with new songs (deduplicate by Spotify ID)
+        setRecommendation(prev => {
+          if (!prev) return null;
+          const existingIds = new Set(prev.songs.map(s => s.id));
+          const newTracks = tracks.filter((t: any) => !existingIds.has(t.id));
+          return {
+            ...prev,
+            songs: [...prev.songs, ...newTracks]
+          };
+        });
       } else {
         console.warn('Failed to load remaining songs, but user already has initial songs');
       }
